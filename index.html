@@ -674,6 +674,8 @@
   <button class="nav-btn" onclick="showPage('publications', this); initMap();"><i class="fas fa-book-open"></i>Publications</button>
   <button class="nav-btn" onclick="showPage('grants', this)"><i class="fas fa-hand-holding-dollar"></i>Grants</button>
   <button class="nav-btn" onclick="showPage('portfolio', this)"><i class="fas fa-layer-group"></i>Portfolio</button>
+  <button class="nav-btn" onclick="showPage('dashboard', this)"><i class="fas fa-chart-line"></i>Dashboard</button>
+  <button class="nav-btn" onclick="showPage('career', this)"><i class="fas fa-briefcase"></i>Career Matches</button>
 </nav>
 
 <!-- ── Main ────────────────────────────────────────── -->
@@ -787,6 +789,46 @@
           <div class="skill-label"><span>Malay</span><span>15%</span></div>
           <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="15"></div></div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DASHBOARD ─────────────────────────────────── -->
+  <section id="dashboard" class="page">
+    <div class="card">
+      <div class="section-heading"><i class="fas fa-chart-line"></i>Environmental Intelligence Dashboard</div>
+      <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:14px">
+        Live dashboard embed. If it does not load in-frame due to browser security headers, open it directly:
+        <a href="https://rjgray-ecosolve.github.io/env-intel-dashboard/" target="_blank" style="color:var(--gold)">rjgray-ecosolve.github.io/env-intel-dashboard</a>.
+      </p>
+      <iframe
+        src="https://rjgray-ecosolve.github.io/env-intel-dashboard/"
+        title="Environmental Intelligence Dashboard"
+        style="width:100%;height:760px;border:1px solid var(--border);border-radius:10px;background:var(--surface2)"
+        loading="lazy"
+      ></iframe>
+    </div>
+  </section>
+
+  <!-- CAREER MATCHES ────────────────────────────── -->
+  <section id="career" class="page">
+    <div class="card">
+      <div class="section-heading"><i class="fas fa-briefcase"></i>Career Matches</div>
+      <p style="font-size:0.82rem;color:var(--text-dim);line-height:1.7">
+        This panel is ready for API-powered role matching. A production version can continuously pull jobs and score fit
+        against your profile (skills, geography, seniority, and conservation-intelligence keywords).
+      </p>
+      <div class="grant-item" style="margin-top:14px">
+        <span class="grant-year">Status</span>
+        <div class="grant-text"><strong>Scaffolded</strong> — next step is wiring live job APIs and a matching service.</div>
+      </div>
+      <div class="tag-list">
+        <span class="tag">OSINT</span>
+        <span class="tag">Wildlife Intelligence</span>
+        <span class="tag">Data Science</span>
+        <span class="tag">GIS</span>
+        <span class="tag">Conservation Tech</span>
+        <span class="tag">Programme Leadership</span>
       </div>
     </div>
   </section>
