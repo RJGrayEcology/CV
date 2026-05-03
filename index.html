@@ -531,6 +531,48 @@
       margin-top: 2px;
     }
 
+    /* ── Pub links ───────────────────────────────────── */
+    .pub-link {
+      color: var(--text);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: color var(--transition), border-color var(--transition);
+    }
+    .pub-link:hover { color: var(--gold); border-bottom-color: var(--gold-dim); }
+
+    /* ── Ops region cards ────────────────────────────── */
+    .ops-region {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 14px 12px;
+      transition: border-color var(--transition), transform var(--transition);
+    }
+    .ops-region:hover { border-color: var(--gold-dim); transform: translateY(-2px); }
+    .ops-flag { font-size: 1.6rem; display: block; margin-bottom: 6px; }
+    .ops-rname { font-weight: 600; font-size: 0.85rem; color: var(--text); margin-bottom: 4px; }
+    .ops-rdesc { font-size: 0.73rem; color: var(--text-dim); line-height: 1.5; }
+
+    /* ── Capability cards ────────────────────────────── */
+    .cap-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 18px 16px;
+      transition: border-color var(--transition);
+    }
+    .cap-card:hover { border-color: var(--gold-dim); }
+    .cap-icon {
+      width: 40px; height: 40px;
+      border-radius: 8px;
+      background: var(--gold-glow);
+      border: 1px solid var(--gold-dim);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gold); font-size: 1rem; margin-bottom: 12px;
+    }
+    .cap-title { font-weight: 600; font-size: 0.88rem; color: var(--text); margin-bottom: 8px; }
+    .cap-body { font-size: 0.78rem; color: var(--text-dim); line-height: 1.65; }
+
     /* ── Badge chips ─────────────────────────────────── */
     .tag-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
     .tag {
@@ -887,50 +929,51 @@
   <section id="publications" class="page">
     <div class="card">
       <div class="section-heading"><i class="fas fa-book-open"></i>Peer-Reviewed Articles</div>
+      <p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:16px">Click any title to search on Google Scholar. Full profile also available at <a href="https://scholar.google.com/citations?user=RsCgfnwAAAAJ&hl=en" target="_blank" style="color:var(--gold)">scholar.google.com</a>.</p>
       <ul class="pub-list">
-        <li class="pub-item"><div class="pub-num">#1 · 2025</div><span class="pub-author-highlight">Gray, R. J.</span>, Gazagne, E., Tilker, A., Van Thong, P., &amp; Bao, T. Q. Prioritising natural heritage: evaluating distribution, threats, and conservation needs of species recovery targets in Vietnam. <em>Biodiversity and Conservation</em>, 34(12), 4289–4308.</li>
-        <li class="pub-item"><div class="pub-num">#2 · 2025</div>Lieb, Z. E., Meijaard, E., Brodie, J. F., … <span class="pub-author-highlight">Gray, R. J.</span>, … &amp; Luskin, M. S. Mapping multiple wild pig species' population dynamics in Southeast Asia during the African swine fever outbreak (2018–2024). <em>Conservation Letters</em>, 18(3), e13105.</li>
-        <li class="pub-item"><div class="pub-num">#3 · 2024</div>Gazagne, E., <span class="pub-author-highlight">Gray, R. J.</span>, Wich, S., Hambuckers, A., &amp; Brotcorne, F. Development of a global thermal detection index to prioritize primate research with thermal drones. <em>Scientific Reports</em>, 14(1), 27963.</li>
-        <li class="pub-item"><div class="pub-num">#4 · 2024</div><span class="pub-author-highlight">Gray, R. J.</span>, Nguyen, T.V., Cao, L.N. et al. Camera trapping in Southern Vietnam: unveiling relative abundance, activity patterns, and conservation challenges of globally threatened pangolins and small carnivores. <em>European Journal of Wildlife Research</em>, 70, 50.</li>
-        <li class="pub-item"><div class="pub-num">#5 · 2024</div>Trinh, T. M., <span class="pub-author-highlight">Gray, R.</span>, Tran, T. T. H., Le, K. L., Cao, N. L., &amp; Willcox, D. The impacts of commercial civet farming in central Vietnam. <em>Small Carnivore Conservation</em>, 62.</li>
-        <li class="pub-item"><div class="pub-num">#6 · 2023</div><span class="pub-author-highlight">Gray, R. J.</span> &amp; Gazagne, E. Feasibility assessment of commercially available UAV sensor and payload functions for crocodile population surveys. <em>Herpetology Notes</em>, 16.</li>
-        <li class="pub-item"><div class="pub-num">#7 · 2023</div>Cao, L., <span class="pub-author-highlight">Gray, R.</span>, Pham, T., et al. Records of Greater Hog Badger <em>Arctonyx collaris</em> from northern Vietnam and a discussion of its status in the country. <em>Small Carnivore Conservation</em>, 61.</li>
-        <li class="pub-item"><div class="pub-num">#8 · 2023</div>Rais, M., Nawaz, M. A., <span class="pub-author-highlight">Gray, R. J.</span>, et al. Niche suitability and spatial distribution patterns of anurans in a unique Ecoregion mosaic of Northern Pakistan. <em>PLoS One</em>, 18(6), e0285867.</li>
-        <li class="pub-item"><div class="pub-num">#9 · 2023</div><span class="pub-author-highlight">Gray, R. J.</span>, Van Le, D., Nguyen, H. T. T., et al. Home ranges and activity patterns of Sunda pangolins <em>Manis javanica</em> in Vietnam. <em>Journal of Asia-Pacific Biodiversity</em>.</li>
-        <li class="pub-item"><div class="pub-num">#10 · 2023</div>Gazagne, E., <span class="pub-author-highlight">Gray, R. J.</span>, Ratajszczak, R., et al. Unmanned aerial vehicles (UAVs) with thermal infrared (TIR) sensors are effective for monitoring and counting threatened Vietnamese primates. <em>Primates</em>, 1–7.</li>
-        <li class="pub-item"><div class="pub-num">#11 · 2023</div>Van Pham, T., Trinh, M. T., <span class="pub-author-highlight">Gray, R. J.</span>, et al. Southern extension of raccoon dog range in Vietnam with comments on its conservation status. <em>European Journal of Wildlife Research</em>, 69(2), 22.</li>
-        <li class="pub-item"><div class="pub-num">#12 · 2023</div>Mfossa, D. M., Gazagne, E., <span class="pub-author-highlight">Gray, R. J.</span>, et al. Montane grassland resources drive gorilla nesting behaviors in the Ebo forest, Cameroon. <em>European Journal of Wildlife Research</em>, 69(2), 31.</li>
-        <li class="pub-item"><div class="pub-num">#13 · 2023</div>Nguyen, H. T., Willcox, D., <span class="pub-author-highlight">Gray, R.</span>, et al. Living on the Edge: The Impacts of Buffer Zones on Wetland Carnivores in Vietnam. (Preprint)</li>
-        <li class="pub-item"><div class="pub-num">#14 · 2022</div><span class="pub-author-highlight">Gray, R.</span>, Van Pham, T., Lo, B. T., et al. Evidence of Spotted Linsang <em>Prionodon pardicolor</em> post-weaning parental care. <em>Small Carnivore Conservation</em>, 60.</li>
-        <li class="pub-item"><div class="pub-num">#15 · 2022</div>Cao, L. N., <span class="pub-author-highlight">Gray, R. J.</span>, et al. Confirmed evidence of marbled cat in Pu Mat National Park, Vietnam. <em>Cat News</em>, 75, 25–28.</li>
-        <li class="pub-item"><div class="pub-num">#16 · 2022</div>Feijó, A., Karlsson, C. M., <span class="pub-author-highlight">Gray, R.</span>, Yang, Q., &amp; Hughes, A. C. Extreme-sized anurans are more prone to climate-driven extinctions. <em>Climate Change Ecology</em>, 100062.</li>
-        <li class="pub-item"><div class="pub-num">#17 · 2022</div>Mulero-Pázmány, M., Martínez-de Dios, J. R., Popa-Lisseanu, A. G., <span class="pub-author-highlight">Gray, R. J.</span>, et al. Development of a Fixed-Wing Drone System for Aerial Insect Sampling. <em>Drones</em>, 6(8), 189.</li>
-        <li class="pub-item"><div class="pub-num">#18 · 2022</div>Thi, M. T., <span class="pub-author-highlight">Gray, R.</span>, et al. Commercial civet farming practices and conservation impacts in central Vietnam. (Pre-print in review)</li>
-        <li class="pub-item"><div class="pub-num">#19 · 2022</div><span class="pub-author-highlight">Gray, R. J.</span> Settling the score: notes on the 60-year literature debate of <em>Porthidium yucatanicum</em> distribution. <em>Herpetology Notes</em>, 15, 387–389.</li>
-        <li class="pub-item"><div class="pub-num">#20 · 2022</div><span class="pub-author-highlight">Gray, R.</span>, et al. Status, threats, and overlap of globally important pangolins and small carnivores in a disturbed wetland mosaic of southern Vietnam. (Pre-print in review)</li>
-        <li class="pub-item"><div class="pub-num">#21 · 2022</div>Hansen, M.F., Ang, A., …<span class="pub-author-highlight">Gray, R.</span>, et al. <em>Macaca fascicularis</em>. IUCN Red List of Threatened Species 2022: e.T12551A199563077.</li>
-        <li class="pub-item"><div class="pub-num">#22 · 2022</div><span class="pub-author-highlight">Gray, R.</span> &amp; Karlsson, C. 101 years of biofluorescent animal studies: trends in literature, novel hypotheses, and best practices moving forward.</li>
-        <li class="pub-item"><div class="pub-num">#23 · 2022</div>Lê, N., Hoang, T., Tran, T., … &amp; <span class="pub-author-highlight">Gray, R. J.</span> Renal morphophysiology is not a significant correlate of observable body condition in Masked Palm Civets. (Pre-print)</li>
-        <li class="pub-item"><div class="pub-num">#24 · 2021</div>Trịnh, T. M., … &amp; <span class="pub-author-highlight">Gray, R. J.</span> The effectiveness of policies for addressing Covid-19 impacts on wildlife conservation in Vietnam. <em>CIFOR Working Paper</em>.</li>
-        <li class="pub-item"><div class="pub-num">#25 · 2021</div>Durso, A. M., de Castañeda, R. R., … <span class="pub-author-highlight">Gray, R. J.</span>, &amp; Bolon, I. Citizen science and online data: Opportunities and challenges for snake ecology and action against snakebite. <em>Toxicon: X</em>, 100071.</li>
-        <li class="pub-item"><div class="pub-num">#26 · 2021</div>Tozetti, A. M., … <span class="pub-author-highlight">Gray, R.</span>, &amp; Entiauspe-Neto, O. M. Evolutionary dynamics shape two passive defensive mechanisms in Neotropical snake radiations. <em>Phyllomedusa</em>, 20(1), 3–13.</li>
-        <li class="pub-item"><div class="pub-num">#27 · 2021</div>Oliveira, H. F. M., Peters, S. L., <span class="pub-author-highlight">Gray, R. J.</span>, Novaes, R. L. M. First report of intraspecific variation in wing translucency for a Neotropical bat species. <em>Journal of Bat Research and Conservation</em>.</li>
-        <li class="pub-item"><div class="pub-num">#28 · 2021</div><span class="pub-author-highlight">Gray, R. J.</span> &amp; Dresser, T. W. Male combat in the striped kukri snake <em>Oligodon teniatus</em>. <em>Herpetological Bulletin</em>, 155, 30–31.</li>
-        <li class="pub-item"><div class="pub-num">#29 · 2021</div>Entiauspe-Neto, O. M., Koch, C., <span class="pub-author-highlight">Gray, R. J.</span>, et al. Taxonomic status of <em>Apostolepis tertulianobeui</em> based on an integrative revision of <em>A. assimilis</em>. <em>Zoologischer Anzeiger</em>, 291, 123–138.</li>
-        <li class="pub-item"><div class="pub-num">#30 · 2021</div>Wilson, G., <span class="pub-author-highlight">Gray, R. J.</span>, Radinal, R. et al. Between a rock and a hard place: rugged terrain and human disturbance affect Sumatran elephants in Aceh. <em>Biodiversity and Conservation</em>.</li>
-        <li class="pub-item"><div class="pub-num">#31 · 2020</div>Saeed, M., Rais, M., <span class="pub-author-highlight">Gray, R. J.</span>, et al. Rise in temperature causes decreased fitness and higher extinction risks in endemic frogs in northern Pakistan. <em>Journal of Thermal Biology</em>, 102809.</li>
-        <li class="pub-item"><div class="pub-num">#32 · 2020</div>Wilson, G., <span class="pub-author-highlight">Gray, R. J.</span>, &amp; Sofyan, H. Identifying variation in utilization density estimators and home ranges of elephant clans in Aceh, Sumatra. <em>European Journal of Wildlife Research</em>, 66(6), 1–20.</li>
-        <li class="pub-item"><div class="pub-num">#33 · 2020</div><span class="pub-author-highlight">Gray, R. J.</span> Sorry, we're open: Golden open-access and inequality in non-human biological sciences. <em>Scientometrics</em>.</li>
-        <li class="pub-item"><div class="pub-num">#34 · 2020</div><span class="pub-author-highlight">Gray, R. J.</span> Exotic Hobos: Release, escape, and potential secondary dispersal of African red-headed agamas through Florida railway systems. <em>BioRxiv</em>.</li>
-        <li class="pub-item"><div class="pub-num">#35 · 2020</div><span class="pub-author-highlight">Gray, R. J.</span> First report of reproduction in the wild for <em>Acanthosaura cardamomensis</em> in Thailand. <em>Herpetology Notes</em>, 13, 185–186.</li>
-        <li class="pub-item"><div class="pub-num">#36 · 2019</div><span class="pub-author-highlight">Gray, R. J.</span> Biofluorescent lateral patterning on the Mossy Bushfrog (<em>Philautus macroscelis</em>): first report of biofluorescence in a rhacophorid frog. <em>Herpetology Notes</em>, 12, 363–364.</li>
-        <li class="pub-item"><div class="pub-num">#37 · 2017</div>Hofmann, E. P., <span class="pub-author-highlight">Gray, R. J.</span>, Wilson, L. D., &amp; Townsend, J. H. Discovery of the first male specimen of <em>Tantilla hendersoni</em> from a new locality in central Belize. <em>Herpetology Notes</em>, 10, 53–57.</li>
-        <li class="pub-item"><div class="pub-num">#38 · 2017</div><span class="pub-author-highlight">Gray, R.</span> &amp; Strine, C. T. Herpetofaunal assemblages of a lowland broadleaf forest and lime orchard in Stann Creek, Belize. <em>ZooKeys</em>, (707), 131.</li>
-        <li class="pub-item"><div class="pub-num">#39 · 2017</div><span class="pub-author-highlight">Gray, R. J.</span> &amp; Hofmann, E. P. Two new herpetofaunal records for Stann Creek District, Belize. <em>Mesoamerican Herpetology</em>.</li>
+        <li class="pub-item"><div class="pub-num">#1 · 2025</div><span class="pub-author-highlight">Gray, R. J.</span>, Gazagne, E., Tilker, A., Van Thong, P., &amp; Bao, T. Q. <a class="pub-link" href="https://scholar.google.com/scholar?q=Prioritising+natural+heritage+evaluating+distribution+threats+conservation+needs+species+recovery+targets+Vietnam" target="_blank">Prioritising natural heritage: evaluating distribution, threats, and conservation needs of species recovery targets in Vietnam.</a> <em>Biodiversity and Conservation</em>, 34(12), 4289–4308.</li>
+        <li class="pub-item"><div class="pub-num">#2 · 2025</div>Lieb, Z. E., Meijaard, E., Brodie, J. F., … <span class="pub-author-highlight">Gray, R. J.</span>, … &amp; Luskin, M. S. <a class="pub-link" href="https://scholar.google.com/scholar?q=Mapping+multiple+wild+pig+species+population+dynamics+Southeast+Asia+african+swine+fever+outbreak" target="_blank">Mapping multiple wild pig species' population dynamics in Southeast Asia during the African swine fever outbreak (2018–2024).</a> <em>Conservation Letters</em>, 18(3), e13105.</li>
+        <li class="pub-item"><div class="pub-num">#3 · 2024</div>Gazagne, E., <span class="pub-author-highlight">Gray, R. J.</span>, Wich, S., Hambuckers, A., &amp; Brotcorne, F. <a class="pub-link" href="https://scholar.google.com/scholar?q=Development+global+thermal+detection+index+prioritize+primate+research+thermal+drones" target="_blank">Development of a global thermal detection index to prioritize primate research with thermal drones.</a> <em>Scientific Reports</em>, 14(1), 27963.</li>
+        <li class="pub-item"><div class="pub-num">#4 · 2024</div><span class="pub-author-highlight">Gray, R. J.</span>, Nguyen, T.V., Cao, L.N. et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Camera+trapping+Southern+Vietnam+relative+abundance+activity+patterns+pangolins+small+carnivores" target="_blank">Camera trapping in Southern Vietnam: unveiling relative abundance, activity patterns, and conservation challenges of globally threatened pangolins and small carnivores.</a> <em>European Journal of Wildlife Research</em>, 70, 50.</li>
+        <li class="pub-item"><div class="pub-num">#5 · 2024</div>Trinh, T. M., <span class="pub-author-highlight">Gray, R.</span>, Tran, T. T. H., Le, K. L., Cao, N. L., &amp; Willcox, D. <a class="pub-link" href="https://scholar.google.com/scholar?q=impacts+commercial+civet+farming+central+Vietnam+Trinh+Gray" target="_blank">The impacts of commercial civet farming in central Vietnam.</a> <em>Small Carnivore Conservation</em>, 62.</li>
+        <li class="pub-item"><div class="pub-num">#6 · 2023</div><span class="pub-author-highlight">Gray, R. J.</span> &amp; Gazagne, E. <a class="pub-link" href="https://scholar.google.com/scholar?q=Feasibility+assessment+commercially+available+UAV+sensor+payload+crocodile+population+surveys" target="_blank">Feasibility assessment of commercially available UAV sensor and payload functions for crocodile population surveys.</a> <em>Herpetology Notes</em>, 16.</li>
+        <li class="pub-item"><div class="pub-num">#7 · 2023</div>Cao, L., <span class="pub-author-highlight">Gray, R.</span>, Pham, T., et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Records+Greater+Hog+Badger+Arctonyx+collaris+northern+Vietnam+conservation+status" target="_blank">Records of Greater Hog Badger <em>Arctonyx collaris</em> from northern Vietnam and a discussion of its status in the country.</a> <em>Small Carnivore Conservation</em>, 61.</li>
+        <li class="pub-item"><div class="pub-num">#8 · 2023</div>Rais, M., Nawaz, M. A., <span class="pub-author-highlight">Gray, R. J.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Niche+suitability+spatial+distribution+patterns+anurans+Ecoregion+mosaic+Northern+Pakistan" target="_blank">Niche suitability and spatial distribution patterns of anurans in a unique Ecoregion mosaic of Northern Pakistan.</a> <em>PLoS One</em>, 18(6), e0285867.</li>
+        <li class="pub-item"><div class="pub-num">#9 · 2023</div><span class="pub-author-highlight">Gray, R. J.</span>, Van Le, D., Nguyen, H. T. T., et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Home+ranges+activity+patterns+Sunda+pangolins+Manis+javanica+Vietnam" target="_blank">Home ranges and activity patterns of Sunda pangolins <em>Manis javanica</em> in Vietnam.</a> <em>Journal of Asia-Pacific Biodiversity</em>.</li>
+        <li class="pub-item"><div class="pub-num">#10 · 2023</div>Gazagne, E., <span class="pub-author-highlight">Gray, R. J.</span>, Ratajszczak, R., et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=UAVs+thermal+infrared+sensors+effective+monitoring+counting+threatened+Vietnamese+primates" target="_blank">Unmanned aerial vehicles (UAVs) with thermal infrared (TIR) sensors are effective for monitoring and counting threatened Vietnamese primates.</a> <em>Primates</em>, 1–7.</li>
+        <li class="pub-item"><div class="pub-num">#11 · 2023</div>Van Pham, T., Trinh, M. T., <span class="pub-author-highlight">Gray, R. J.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Southern+extension+raccoon+dog+Nyctereutes+procyonoides+range+Vietnam+conservation+status" target="_blank">Southern extension of raccoon dog <em>Nyctereutes procyonoides</em> range in Vietnam with comments on its conservation status.</a> <em>European Journal of Wildlife Research</em>, 69(2), 22.</li>
+        <li class="pub-item"><div class="pub-num">#12 · 2023</div>Mfossa, D. M., Gazagne, E., <span class="pub-author-highlight">Gray, R. J.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Montane+grassland+resources+gorilla+nesting+behaviors+Ebo+forest+Cameroon" target="_blank">Montane grassland resources drive gorilla (<em>Gorilla gorilla</em>) nesting behaviors in the Ebo forest, Cameroon.</a> <em>European Journal of Wildlife Research</em>, 69(2), 31.</li>
+        <li class="pub-item"><div class="pub-num">#13 · 2023</div>Nguyen, H. T., Willcox, D., <span class="pub-author-highlight">Gray, R.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Living+Edge+Impacts+Buffer+Zones+Wetland+Carnivores+Vietnam" target="_blank">Living on the Edge: The Impacts of Buffer Zones on Wetland Carnivores in Vietnam.</a> (Preprint)</li>
+        <li class="pub-item"><div class="pub-num">#14 · 2022</div><span class="pub-author-highlight">Gray, R.</span>, Van Pham, T., Lo, B. T., et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Evidence+Spotted+Linsang+Prionodon+pardicolor+post-weaning+parental+care" target="_blank">Evidence of Spotted Linsang <em>Prionodon pardicolor</em> post-weaning parental care.</a> <em>Small Carnivore Conservation</em>, 60.</li>
+        <li class="pub-item"><div class="pub-num">#15 · 2022</div>Cao, L. N., <span class="pub-author-highlight">Gray, R. J.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Confirmed+evidence+marbled+cat+Pu+Mat+National+Park+Vietnam" target="_blank">Confirmed evidence of marbled cat in Pu Mat National Park, Vietnam.</a> <em>Cat News</em>, 75, 25–28.</li>
+        <li class="pub-item"><div class="pub-num">#16 · 2022</div>Feijó, A., Karlsson, C. M., <span class="pub-author-highlight">Gray, R.</span>, Yang, Q., &amp; Hughes, A. C. <a class="pub-link" href="https://scholar.google.com/scholar?q=Extreme-sized+anurans+more+prone+climate-driven+extinctions" target="_blank">Extreme-sized anurans are more prone to climate-driven extinctions.</a> <em>Climate Change Ecology</em>, 100062.</li>
+        <li class="pub-item"><div class="pub-num">#17 · 2022</div>Mulero-Pázmány, M., Martínez-de Dios, J. R., Popa-Lisseanu, A. G., <span class="pub-author-highlight">Gray, R. J.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Development+Fixed-Wing+Drone+System+Aerial+Insect+Sampling" target="_blank">Development of a Fixed-Wing Drone System for Aerial Insect Sampling.</a> <em>Drones</em>, 6(8), 189.</li>
+        <li class="pub-item"><div class="pub-num">#18 · 2022</div>Thi, M. T., <span class="pub-author-highlight">Gray, R.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Commercial+civet+farming+practices+conservation+impacts+wild+civet+populations+central+Vietnam" target="_blank">Commercial civet farming practices and conservation impacts on wild civet populations in central Vietnam.</a> (Pre-print in review)</li>
+        <li class="pub-item"><div class="pub-num">#19 · 2022</div><span class="pub-author-highlight">Gray, R. J.</span> <a class="pub-link" href="https://scholar.google.com/scholar?q=Settling+score+60-year+literature+debate+Porthidium+yucatanicum+distribution" target="_blank">Settling the score: notes on the 60-year literature debate of <em>Porthidium yucatanicum</em> distribution.</a> <em>Herpetology Notes</em>, 15, 387–389.</li>
+        <li class="pub-item"><div class="pub-num">#20 · 2022</div><span class="pub-author-highlight">Gray, R.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Status+threats+overlap+pangolins+small+carnivores+disturbed+wetland+mosaic+southern+Vietnam" target="_blank">Status, threats, and overlap of globally important pangolins and threatened small carnivores in a disturbed wetland mosaic of southern Vietnam.</a> (Pre-print in review)</li>
+        <li class="pub-item"><div class="pub-num">#21 · 2022</div>Hansen, M.F., Ang, A., …<span class="pub-author-highlight">Gray, R.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Macaca+fascicularis+IUCN+Red+List+2022" target="_blank"><em>Macaca fascicularis</em>. IUCN Red List of Threatened Species 2022.</a></li>
+        <li class="pub-item"><div class="pub-num">#22 · 2022</div><span class="pub-author-highlight">Gray, R.</span> &amp; Karlsson, C. <a class="pub-link" href="https://scholar.google.com/scholar?q=101+years+biofluorescent+animal+studies+trends+literature+novel+hypotheses+best+practices" target="_blank">101 years of biofluorescent animal studies: trends in literature, novel hypotheses, and best practices moving forward.</a></li>
+        <li class="pub-item"><div class="pub-num">#23 · 2022</div>Lê, N., Hoang, T., Tran, T., … &amp; <span class="pub-author-highlight">Gray, R. J.</span> <a class="pub-link" href="https://scholar.google.com/scholar?q=Renal+morphophysiology+significant+correlate+body+condition+Masked+Palm+Civets+Paguma+larvata" target="_blank">Renal morphophysiology is not a significant correlate of observable body condition in Masked Palm Civets (<em>Paguma larvata</em>).</a> (Pre-print)</li>
+        <li class="pub-item"><div class="pub-num">#24 · 2021</div>Trịnh, T. M., … &amp; <span class="pub-author-highlight">Gray, R. J.</span> <a class="pub-link" href="https://scholar.google.com/scholar?q=effectiveness+policies+addressing+Covid-19+impacts+wildlife+conservation+Vietnam+CIFOR" target="_blank">The effectiveness of policies for addressing Covid-19 impacts on wildlife conservation in Vietnam.</a> <em>CIFOR Working Paper</em>.</li>
+        <li class="pub-item"><div class="pub-num">#25 · 2021</div>Durso, A. M., de Castañeda, R. R., … <span class="pub-author-highlight">Gray, R. J.</span>, &amp; Bolon, I. <a class="pub-link" href="https://scholar.google.com/scholar?q=Citizen+science+online+data+opportunities+challenges+snake+ecology+snakebite+Durso" target="_blank">Citizen science and online data: Opportunities and challenges for snake ecology and action against snakebite.</a> <em>Toxicon: X</em>, 100071.</li>
+        <li class="pub-item"><div class="pub-num">#26 · 2021</div>Tozetti, A. M., … <span class="pub-author-highlight">Gray, R.</span>, &amp; Entiauspe-Neto, O. M. <a class="pub-link" href="https://scholar.google.com/scholar?q=Evolutionary+dynamics+shape+two+passive+defensive+mechanisms+Neotropical+snake+radiations" target="_blank">Evolutionary dynamics shape two passive defensive mechanisms in Neotropical snake radiations.</a> <em>Phyllomedusa</em>, 20(1), 3–13.</li>
+        <li class="pub-item"><div class="pub-num">#27 · 2021</div>Oliveira, H. F. M., Peters, S. L., <span class="pub-author-highlight">Gray, R. J.</span>, Novaes, R. L. M. <a class="pub-link" href="https://scholar.google.com/scholar?q=First+report+intraspecific+variation+wing+translucency+Neotropical+bat" target="_blank">First report of intraspecific variation in wing translucency for a Neotropical bat species.</a> <em>Journal of Bat Research and Conservation</em>.</li>
+        <li class="pub-item"><div class="pub-num">#28 · 2021</div><span class="pub-author-highlight">Gray, R. J.</span> &amp; Dresser, T. W. <a class="pub-link" href="https://scholar.google.com/scholar?q=Male+combat+striped+kukri+snake+Oligodon+teniatus+Gray+Dresser" target="_blank">Male combat in the striped kukri snake <em>Oligodon teniatus</em>.</a> <em>Herpetological Bulletin</em>, 155, 30–31.</li>
+        <li class="pub-item"><div class="pub-num">#29 · 2021</div>Entiauspe-Neto, O. M., Koch, C., <span class="pub-author-highlight">Gray, R. J.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Taxonomic+status+Apostolepis+tertulianobeui+integrative+revision+Apostolepis+assimilis" target="_blank">Taxonomic status of <em>Apostolepis tertulianobeui</em> based on an integrative revision of <em>A. assimilis</em>.</a> <em>Zoologischer Anzeiger</em>, 291, 123–138.</li>
+        <li class="pub-item"><div class="pub-num">#30 · 2021</div>Wilson, G., <span class="pub-author-highlight">Gray, R. J.</span>, Radinal, R. et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Between+rock+hard+place+rugged+terrain+human+disturbance+Sumatran+elephants+Aceh" target="_blank">Between a rock and a hard place: rugged terrain features and human disturbance affect behaviour and habitat use of Sumatran elephants in Aceh.</a> <em>Biodiversity and Conservation</em>.</li>
+        <li class="pub-item"><div class="pub-num">#31 · 2020</div>Saeed, M., Rais, M., <span class="pub-author-highlight">Gray, R. J.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Rise+temperature+decreased+fitness+higher+extinction+risks+endemic+frogs+high+altitude+Pakistan" target="_blank">Rise in temperature causes decreased fitness and higher extinction risks in endemic frogs at high altitude forested wetlands in northern Pakistan.</a> <em>Journal of Thermal Biology</em>, 102809.</li>
+        <li class="pub-item"><div class="pub-num">#32 · 2020</div>Wilson, G., <span class="pub-author-highlight">Gray, R. J.</span>, &amp; Sofyan, H. <a class="pub-link" href="https://scholar.google.com/scholar?q=Identifying+variation+utilization+density+estimators+home+ranges+elephant+clans+Aceh+Sumatra" target="_blank">Identifying the variation in utilization density estimators and home ranges of elephant clans in Aceh, Sumatra, Indonesia.</a> <em>European Journal of Wildlife Research</em>, 66(6), 1–20.</li>
+        <li class="pub-item"><div class="pub-num">#33 · 2020</div><span class="pub-author-highlight">Gray, R. J.</span> <a class="pub-link" href="https://scholar.google.com/scholar?q=Sorry+we+are+open+Golden+open-access+inequality+non-human+biological+sciences" target="_blank">Sorry, we're open: Golden open-access and inequality in non-human biological sciences.</a> <em>Scientometrics</em>.</li>
+        <li class="pub-item"><div class="pub-num">#34 · 2020</div><span class="pub-author-highlight">Gray, R. J.</span> <a class="pub-link" href="https://scholar.google.com/scholar?q=Exotic+Hobos+Release+escape+secondary+dispersal+African+red-headed+agamas+Florida+railway" target="_blank">Exotic Hobos: Release, escape, and potential secondary dispersal of African red-headed agamas through the Florida railway systems.</a> <em>BioRxiv</em>.</li>
+        <li class="pub-item"><div class="pub-num">#35 · 2020</div><span class="pub-author-highlight">Gray, R. J.</span> <a class="pub-link" href="https://scholar.google.com/scholar?q=First+report+reproduction+wild+Acanthosaura+cardamomensis+Thailand" target="_blank">First report of reproduction in the wild for <em>Acanthosaura cardamomensis</em> in Thailand.</a> <em>Herpetology Notes</em>, 13, 185–186.</li>
+        <li class="pub-item"><div class="pub-num">#36 · 2019</div><span class="pub-author-highlight">Gray, R. J.</span> <a class="pub-link" href="https://scholar.google.com/scholar?q=Biofluorescent+lateral+patterning+Mossy+Bushfrog+Philautus+macroscelis+biofluorescence+rhacophorid" target="_blank">Biofluorescent lateral patterning on the Mossy Bushfrog (<em>Philautus macroscelis</em>): the first report of biofluorescence in a rhacophorid frog.</a> <em>Herpetology Notes</em>, 12, 363–364.</li>
+        <li class="pub-item"><div class="pub-num">#37 · 2017</div>Hofmann, E. P., <span class="pub-author-highlight">Gray, R. J.</span>, Wilson, L. D., &amp; Townsend, J. H. <a class="pub-link" href="https://scholar.google.com/scholar?q=Discovery+first+male+specimen+Tantilla+hendersoni+new+locality+central+Belize" target="_blank">Discovery of the first male specimen of <em>Tantilla hendersoni</em> from a new locality in central Belize.</a> <em>Herpetology Notes</em>, 10, 53–57.</li>
+        <li class="pub-item"><div class="pub-num">#38 · 2017</div><span class="pub-author-highlight">Gray, R.</span> &amp; Strine, C. T. <a class="pub-link" href="https://scholar.google.com/scholar?q=Herpetofaunal+assemblages+lowland+broadleaf+forest+overgrown+orchard+lime+orchard+Stann+Creek+Belize" target="_blank">Herpetofaunal assemblages of a lowland broadleaf forest, an overgrown orchard forest and a lime orchard in Stann Creek, Belize.</a> <em>ZooKeys</em>, (707), 131.</li>
+        <li class="pub-item"><div class="pub-num">#39 · 2017</div><span class="pub-author-highlight">Gray, R. J.</span> &amp; Hofmann, E. P. <a class="pub-link" href="https://scholar.google.com/scholar?q=Two+new+herpetofaunal+records+Stann+Creek+District+Belize+Gray+Hofmann" target="_blank">Two new herpetofaunal records for Stann Creek District, Belize.</a> <em>Mesoamerican Herpetology</em>.</li>
       </ul>
       <div style="margin-top:20px">
         <div class="section-heading" style="margin-top:10px"><i class="fas fa-book"></i>Books</div>
-        <div class="pub-item"><div class="pub-num">#1 · 2018</div><span class="pub-author-highlight">Gray, R.</span> (2018). <em>Fungi of Belize.</em> Global Explorer Press.</div>
+        <div class="pub-item"><div class="pub-num">#1 · 2018</div><span class="pub-author-highlight">Gray, R.</span> (2018). <a class="pub-link" href="https://scholar.google.com/scholar?q=Fungi+of+Belize+Russell+Gray+Global+Explorer+Press" target="_blank"><em>Fungi of Belize.</em></a> Global Explorer Press.</div>
       </div>
     </div>
   </section>
@@ -969,59 +1012,144 @@
 
   <!-- PORTFOLIO ────────────────────────────────── -->
   <section id="portfolio" class="page">
-    <div class="card">
-      <div class="section-heading"><i class="fas fa-layer-group"></i>Project Portfolio</div>
-      <div class="portfolio-grid">
-        <div class="portfolio-card" onclick="window.open('https://www.udemy.com/course/ecology-in-r/','_blank')">
-          <div class="portfolio-card-img" style="background:#1a2a1a"><i class="fas fa-r-project" style="color:#276dc3"></i></div>
-          <div class="portfolio-card-body">
-            <div class="portfolio-card-title">Ecology in R — Udemy Course</div>
-            <div class="portfolio-card-desc">Full online course covering R programming for ecological data analysis, statistics, GIS, and machine learning.</div>
-            <span class="portfolio-card-link"><i class="fas fa-external-link-alt"></i> udemy.com/course/ecology-in-r</span>
-          </div>
+
+    <!-- Hero banner -->
+    <div class="hero-card" style="margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px">
+        <div style="width:48px;height:48px;border-radius:10px;background:var(--gold-glow);border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--gold)"><i class="fas fa-satellite-dish"></i></div>
+        <div>
+          <div class="hero-name" style="font-size:1.5rem">Global Monitoring System</div>
+          <div class="hero-subtitle" style="margin-bottom:0">ECOSOLVE · GI-TOC · 2024–Present</div>
         </div>
-        <div class="portfolio-card" onclick="window.open('https://rpubs.com/Russell_Gray/VNM_Key_Species','_blank')">
-          <div class="portfolio-card-img"><i class="fas fa-map-marked-alt"></i></div>
-          <div class="portfolio-card-body">
-            <div class="portfolio-card-title">Vietnam Conservation Priorities</div>
-            <div class="portfolio-card-desc">Interactive analysis of key species distribution and conservation priorities across Vietnam's protected areas.</div>
-            <span class="portfolio-card-link"><i class="fas fa-external-link-alt"></i> RPubs report</span>
-          </div>
+      </div>
+      <p class="hero-bio">
+        As Head of Data for the Global Monitoring System, I direct an 11-country network of OSINT analysts conducting covert digital surveillance of illegal wildlife trade (IWT) networks. Analysts monitor dark web marketplaces, encrypted messaging platforms, social media, and e-commerce ecosystems to develop actionable intelligence packages delivered to national and international law enforcement for ground operations — bridging open-source intelligence with kinetic disruption of transnational organised crime.
+      </p>
+      <div class="tag-list" style="margin-top:16px">
+        <span class="tag gold">Transnational Organised Crime</span>
+        <span class="tag gold">OSINT</span>
+        <span class="tag gold">GeoINT</span>
+        <span class="tag gold">HUMINT</span>
+        <span class="tag gold">Threat Intelligence</span>
+        <span class="tag gold">Law Enforcement Liaison</span>
+        <span class="tag gold">Network Analysis</span>
+        <span class="tag gold">Dark Web Monitoring</span>
+        <span class="tag gold">IWT Disruption</span>
+      </div>
+    </div>
+
+    <!-- Analyst network map card -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="section-heading"><i class="fas fa-globe"></i>Global Analyst Network</div>
+      <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:18px">Coordinating specialist OSINT analysts embedded across 11 countries, each covering distinct trafficking corridors, regional platforms, and local law enforcement ecosystems.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px">
+        <div class="ops-region"><span class="ops-flag">🇹🇭</span><div class="ops-rname">Thailand</div><div class="ops-rdesc">SE Asian trafficking hubs; social media & e-commerce monitoring</div></div>
+        <div class="ops-region"><span class="ops-flag">🇮🇩</span><div class="ops-rname">Indonesia</div><div class="ops-rdesc">Maritime smuggling networks; reptile & bird trade surveillance</div></div>
+        <div class="ops-region"><span class="ops-flag">🇮🇳</span><div class="ops-rname">India / South Asia</div><div class="ops-rdesc">Tiger, rhino & elephant parts; Darknet & Telegram monitoring</div></div>
+        <div class="ops-region"><span class="ops-flag">🇦🇪</span><div class="ops-rname">UAE / MENA</div><div class="ops-rdesc">Transit & laundering hub analysis; cheetah & raptor trade</div></div>
+        <div class="ops-region"><span class="ops-flag">🇨🇲</span><div class="ops-rname">Cameroon</div><div class="ops-rdesc">Ivory & primate trafficking; Central African networks</div></div>
+        <div class="ops-region"><span class="ops-flag">🇳🇬</span><div class="ops-rname">Nigeria</div><div class="ops-rdesc">West African wildlife crime syndicates; financial flow tracking</div></div>
+        <div class="ops-region"><span class="ops-flag">🇿🇦</span><div class="ops-rname">South Africa</div><div class="ops-rdesc">Rhino horn & abalone networks; INTERPOL liaison</div></div>
+        <div class="ops-region"><span class="ops-flag">🇧🇷</span><div class="ops-rname">Brazil</div><div class="ops-rdesc">Amazon wildlife trafficking; export front monitoring</div></div>
+        <div class="ops-region"><span class="ops-flag">🇨🇴</span><div class="ops-rname">Colombia</div><div class="ops-rdesc">Bird & primate trade; cartel-linked wildlife crime</div></div>
+        <div class="ops-region"><span class="ops-flag">🇲🇽</span><div class="ops-rname">Mexico</div><div class="ops-rdesc">North American border trafficking; reptile & bird markets</div></div>
+        <div class="ops-region"><span class="ops-flag">🇨🇿</span><div class="ops-rname">Czech Republic</div><div class="ops-rdesc">European distribution & laundering; CITES import violations</div></div>
+      </div>
+    </div>
+
+    <!-- Capability pillars -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="section-heading"><i class="fas fa-crosshairs"></i>Intelligence Capabilities</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px">
+        <div class="cap-card">
+          <div class="cap-icon"><i class="fas fa-magnifying-glass-chart"></i></div>
+          <div class="cap-title">OSINT Collection &amp; Analysis</div>
+          <div class="cap-body">End-to-end collection cycles targeting online IWT marketplaces, encrypted channels (Telegram, WhatsApp, Signal), dark-web forums, and social media platforms. Analysts produce structured intelligence reports on trafficking actors, commodities, routes, and pricing.</div>
         </div>
-        <div class="portfolio-card" onclick="window.open('https://rpubs.com/Russell_Gray/invasivereptiles','_blank')">
-          <div class="portfolio-card-img"><i class="fas fa-dragon"></i></div>
-          <div class="portfolio-card-body">
-            <div class="portfolio-card-title">Florida Invasive Reptiles</div>
-            <div class="portfolio-card-desc">Spatial analysis of invasive reptile spread through Florida, including railway corridor dispersal of agamas.</div>
-            <span class="portfolio-card-link"><i class="fas fa-external-link-alt"></i> RPubs report</span>
-          </div>
+        <div class="cap-card">
+          <div class="cap-icon"><i class="fas fa-map-location-dot"></i></div>
+          <div class="cap-title">GeoINT &amp; Pattern-of-Life Analysis</div>
+          <div class="cap-body">Geospatial intelligence integrating trafficking route data, seizure records, and digital footprints. Produces pattern-of-life assessments of priority suspects and identifies logistical nodes within smuggling networks for law enforcement targeting.</div>
         </div>
-        <div class="portfolio-card" onclick="window.open('https://rjgrayecology.shinyapps.io/CamTrapApp/','_blank')">
-          <div class="portfolio-card-img"><i class="fas fa-camera"></i></div>
-          <div class="portfolio-card-body">
-            <div class="portfolio-card-title">Camera Trap Study Design App</div>
-            <div class="portfolio-card-desc">Shiny application to assist researchers with optimal camera trap placement and study design.</div>
-            <span class="portfolio-card-link"><i class="fas fa-external-link-alt"></i> Shiny App</span>
-          </div>
+        <div class="cap-card">
+          <div class="cap-icon"><i class="fas fa-network-wired"></i></div>
+          <div class="cap-title">Network Mapping &amp; Link Analysis</div>
+          <div class="cap-body">Social network analysis and actor mapping of IWT syndicates, identifying key brokers, financiers, and logistics operators within transnational organised crime structures. Supports strategic prioritisation of high-value targets.</div>
         </div>
-        <div class="portfolio-card" onclick="window.open('https://rjgrayecology.shinyapps.io/VN_PA_Habitats/','_blank')">
-          <div class="portfolio-card-img"><i class="fas fa-tree"></i></div>
-          <div class="portfolio-card-body">
-            <div class="portfolio-card-title">Vietnam PA Habitats</div>
-            <div class="portfolio-card-desc">Interactive explorer of habitat types across Vietnam's protected area network.</div>
-            <span class="portfolio-card-link"><i class="fas fa-external-link-alt"></i> Shiny App</span>
-          </div>
+        <div class="cap-card">
+          <div class="cap-icon"><i class="fas fa-robot"></i></div>
+          <div class="cap-title">AI-Powered Monitoring Tools</div>
+          <div class="cap-body">Development and deployment of AI/ML pipelines for automated detection of wildlife trade listings across platforms. Supports analysts with classification models, NLP-based keyword systems, and image recognition to scale monitoring coverage.</div>
         </div>
-        <div class="portfolio-card" onclick="window.open('https://rpubs.com/Russell_Gray/VNM_PA_SPLIST','_blank')">
-          <div class="portfolio-card-img"><i class="fas fa-list-ul"></i></div>
-          <div class="portfolio-card-body">
-            <div class="portfolio-card-title">Vietnam PA Species List</div>
-            <div class="portfolio-card-desc">Comprehensive species inventory for Vietnamese protected areas with threat status analysis.</div>
-            <span class="portfolio-card-link"><i class="fas fa-external-link-alt"></i> RPubs report</span>
-          </div>
+        <div class="cap-card">
+          <div class="cap-icon"><i class="fas fa-shield-halved"></i></div>
+          <div class="cap-title">Law Enforcement Coordination</div>
+          <div class="cap-body">Direct liaison with national wildlife crime units, INTERPOL, UNODC, and regional task forces. Intelligence packages formatted as actionable case files delivered to partners for arrest operations, customs intercepts, and financial investigations.</div>
+        </div>
+        <div class="cap-card">
+          <div class="cap-icon"><i class="fas fa-users-gear"></i></div>
+          <div class="cap-title">Team Leadership &amp; Tradecraft Training</div>
+          <div class="cap-body">Recruiting, onboarding, and developing analysts across 11 countries. Establishing SOPs for digital security, source handling, intelligence product formatting, and platform-specific collection tradecraft. Maintains operational security across a distributed global team.</div>
         </div>
       </div>
     </div>
+
+    <!-- Operational context cards -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="section-heading"><i class="fas fa-file-shield"></i>Operational Highlights</div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-title">Global Monitoring System — Architecture &amp; Build</div>
+          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2024–Present</div>
+          <div class="tl-body">Designed and built the operational architecture of GI-TOC's Global Monitoring System from the ground up — including analyst workflows, intelligence product templates, tasking systems, platform coverage matrices, and data pipelines feeding into the ECOSOLVE platform.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-title">11-Country Analyst Network — Coordination</div>
+          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2024–Present</div>
+          <div class="tl-body">Daily coordination of geographically distributed analyst teams across Africa, Asia, the Americas, and Europe. Manages tasking priorities, product quality assurance, inter-analyst information sharing, and translation of strategic intelligence requirements into collection tasks.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-title">AI Products for IWT Detection</div>
+          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2024–Present</div>
+          <div class="tl-body">Co-developing machine learning and NLP tools to automate detection of IWT content across major e-commerce and social media platforms, enabling analyst teams to focus collection capacity on priority leads rather than manual scanning.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-title">Law Enforcement Intelligence Packages</div>
+          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2024–Present</div>
+          <div class="tl-body">Production and delivery of structured intelligence reports on priority trafficking networks and individual suspects to national wildlife crime units, customs authorities, and international bodies including INTERPOL and UNODC. Intelligence directly supports ground-level interdiction operations.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-title">IWT Disruption Operations — Save Vietnam's Wildlife</div>
+          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2021–2024</div>
+          <div class="tl-body">Prior to GMS, guided OSINT-informed anti-poaching and IWT interception operations across five protected areas in Vietnam. Developed analytical frameworks for patrol data (SMART), trafficking network mapping, and demand-reduction social research across seven provinces.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Key competencies footer strip -->
+    <div class="card">
+      <div class="section-heading"><i class="fas fa-id-badge"></i>Core Competencies</div>
+      <div class="tag-list">
+        <span class="tag">Wildlife Crime Intelligence</span>
+        <span class="tag">Transnational Organised Crime Analysis</span>
+        <span class="tag">Open-Source Intelligence (OSINT)</span>
+        <span class="tag">Geospatial Intelligence (GeoINT)</span>
+        <span class="tag">Human Intelligence (HUMINT) Framework Design</span>
+        <span class="tag">Digital Platform Monitoring</span>
+        <span class="tag">Dark Web &amp; Encrypted Channel Analysis</span>
+        <span class="tag">Social Network Analysis</span>
+        <span class="tag">Threat Assessment &amp; Prioritisation</span>
+        <span class="tag">Actionable Intelligence Production</span>
+        <span class="tag">Law Enforcement Liaison (INTERPOL / UNODC)</span>
+        <span class="tag">Multi-Country Team Leadership</span>
+        <span class="tag">AI/ML for Intelligence Automation</span>
+        <span class="tag">Operational Security (OPSEC)</span>
+        <span class="tag">R / Python Data Pipelines</span>
+        <span class="tag">Spatial Pattern Analysis</span>
+        <span class="tag">Grant &amp; Programme Management</span>
+      </div>
+    </div>
+
   </section>
 
   <!-- MAP ──────────────────────────────────────── -->
