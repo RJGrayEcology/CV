@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Russell J. Gray – Digital CV</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <style>
+    /* ── Reset & Tokens ─────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold:      #d4af37;
+      --gold-dim:  #a67c00;
+      --gold-glow: rgba(212,175,55,0.25);
+      --bg:        #141519;
+      --surface:   #1e2029;
+      --surface2:  #252830;
+      --border:    #333645;
+      --text:      #ccd0db;
+      --text-dim:  #7a8094;
+      --sidebar-w: 290px;
+      --nav-h:     56px;
+      --radius:    14px;
+      --transition: 0.3s ease;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Raleway', sans-serif;
+      font-weight: 400;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* ── Scrollbar ───────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 3px; }
+
+    /* ── Sidebar ─────────────────────────────────────── */
+    .sidebar {
+      position: fixed;
+      left: 16px;
+      top: 16px;
+      bottom: 16px;
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 20px 24px;
+      z-index: 200;
+      overflow-y: auto;
+      box-shadow: 0 0 40px rgba(0,0,0,0.6);
+    }
+
+    .profile-wrap {
+      position: relative;
+      margin-bottom: 18px;
+    }
+    .profile-wrap::before {
+      content: '';
+      position: absolute;
+      inset: -5px;
+      border-radius: 50%;
+      background: conic-gradient(var(--gold), var(--gold-dim), var(--gold));
+      animation: spin 8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .profile-img {
+      position: relative;
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid var(--bg);
+      display: block;
+      background: var(--surface2);
+    }
+
+    .profile-initials {
+      position: relative;
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cinzel', serif;
+      font-size: 2.2rem;
+      color: var(--gold);
+      border: 4px solid var(--bg);
+    }
+
+    .sidebar-name {
+      font-family: 'Cinzel', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--gold);
+      text-align: center;
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
+    }
+    .sidebar-title {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      text-align: center;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 22px;
+    }
+
+    .sidebar-divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
+      margin: 14px 0;
+    }
+
+    /* contact links */
+    .contact-list {
+      list-style: none;
+      width: 100%;
+    }
+    .contact-list li {
+      margin-bottom: 10px;
+    }
+    .contact-list a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 0.78rem;
+      transition: color var(--transition);
+      word-break: break-all;
+    }
+    .contact-list a:hover { color: var(--gold); }
+    .contact-list .icon-circle {
+      flex-shrink: 0;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: var(--gold);
+      transition: box-shadow var(--transition);
+    }
+    .contact-list a:hover .icon-circle {
+      box-shadow: 0 0 10px var(--gold-glow);
+    }
+
+    .sidebar-section-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      width: 100%;
+      margin-top: 6px;
+      margin-bottom: 8px;
+    }
+
+    /* ── Top Nav ─────────────────────────────────────── */
+    .top-nav {
+      position: fixed;
+      top: 16px;
+      left: calc(var(--sidebar-w) + 36px);
+      right: 16px;
+      height: var(--nav-h);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 4px;
+      z-index: 300;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      overflow-x: auto;
+    }
+    .top-nav::-webkit-scrollbar { height: 2px; }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-family: 'Raleway', sans-serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all var(--transition);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nav-btn:hover, .nav-btn.active {
+      color: var(--gold);
+      background: var(--gold-glow);
+    }
+    .nav-btn i { font-size: 0.85rem; }
+
+    /* ── Main Content ────────────────────────────────── */
+    .main {
+      margin-left: calc(var(--sidebar-w) + 36px);
+      margin-top: calc(var(--nav-h) + 32px);
+      padding: 0 20px 40px 4px;
+      flex: 1;
+    }
+
+    /* pages */
+    .page {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+    .page.active { display: block; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Cards & Containers ──────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 30px;
+      margin-bottom: 20px;
+    }
+
+    .section-heading {
+      font-family: 'Cinzel', serif;
+      font-size: 1rem;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-heading::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, var(--gold-dim), transparent);
+    }
+    .section-heading i { font-size: 0.9rem; }
+
+    /* ── Timeline ────────────────────────────────────── */
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 8px;
+      bottom: 8px;
+      width: 1px;
+      background: linear-gradient(to bottom, var(--gold), var(--gold-dim), transparent);
+    }
+    .tl-item {
+      position: relative;
+      margin-bottom: 28px;
+    }
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      left: -27px;
+      top: 6px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 8px var(--gold);
+    }
+    .tl-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #e8ebf0;
+      margin-bottom: 3px;
+    }
+    .tl-meta {
+      font-size: 0.75rem;
+      color: var(--gold-dim);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tl-body {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+    .tl-body li { margin-bottom: 4px; }
+
+    /* ── Skills Bars ─────────────────────────────────── */
+    .skill-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .skill-item .skill-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .skill-bar-bg {
+      height: 6px;
+      background: var(--surface2);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .skill-bar-fill {
+      height: 100%;
+      background: linear-gradient(to right, var(--gold-dim), var(--gold));
+      border-radius: 3px;
+      width: 0;
+      transition: width 1.2s ease;
+    }
+
+    /* ── Publications ────────────────────────────────── */
+    .pub-list { list-style: none; }
+    .pub-item {
+      padding: 14px 16px;
+      border-left: 3px solid var(--border);
+      margin-bottom: 14px;
+      border-radius: 0 8px 8px 0;
+      background: var(--surface2);
+      transition: border-color var(--transition);
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+    .pub-item:hover { border-color: var(--gold); }
+    .pub-item .pub-num {
+      font-family: 'Cinzel', serif;
+      color: var(--gold);
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .pub-author-highlight { color: var(--gold); font-weight: 600; }
+
+    /* ── Grants ──────────────────────────────────────── */
+    .grant-item {
+      display: flex;
+      gap: 14px;
+      padding: 14px 16px;
+      background: var(--surface2);
+      border-radius: 8px;
+      margin-bottom: 10px;
+      align-items: flex-start;
+      border: 1px solid var(--border);
+      transition: border-color var(--transition);
+    }
+    .grant-item:hover { border-color: var(--gold-dim); }
+    .grant-year {
+      flex-shrink: 0;
+      font-family: 'Cinzel', serif;
+      font-size: 0.7rem;
+      color: var(--gold);
+      background: var(--gold-glow);
+      border: 1px solid var(--gold-dim);
+      border-radius: 4px;
+      padding: 2px 8px;
+      margin-top: 2px;
+    }
+    .grant-text { font-size: 0.82rem; color: var(--text-dim); line-height: 1.5; }
+    .grant-text strong { color: var(--text); }
+
+    /* ── Portfolio Grid ──────────────────────────────── */
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 18px;
+    }
+    .portfolio-card {
+      background: var(--surface2);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+      cursor: pointer;
+    }
+    .portfolio-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--gold-dim);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    }
+    .portfolio-card-img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface);
+      font-size: 2.5rem;
+      color: var(--gold-dim);
+    }
+    .portfolio-card-body {
+      padding: 14px 16px;
+    }
+    .portfolio-card-title {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .portfolio-card-desc {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+    .portfolio-card-link {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 0.72rem;
+      color: var(--gold);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+    }
+    .portfolio-card-link:hover { text-decoration: underline; }
+
+    /* ── Map ─────────────────────────────────────────── */
+    #map {
+      height: 520px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .map-hover-label {
+      margin-top: 14px;
+      min-height: 36px;
+      padding: 8px 16px;
+      background: var(--surface2);
+      border-radius: 8px;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      border-left: 3px solid var(--gold);
+    }
+
+    /* ── About / Hero ────────────────────────────────── */
+    .hero-card {
+      background: linear-gradient(135deg, var(--surface) 60%, #1a1d2a);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 36px 28px;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-card::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(212,175,55,0.08), transparent 70%);
+    }
+    .hero-name {
+      font-family: 'Cinzel', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+    .hero-subtitle {
+      font-size: 0.85rem;
+      color: var(--gold);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .hero-bio {
+      font-size: 0.88rem;
+      color: var(--text-dim);
+      line-height: 1.8;
+      max-width: 680px;
+    }
+
+    .stat-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+    .stat-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 20px;
+      text-align: center;
+      min-width: 100px;
+      flex: 1;
+    }
+    .stat-num {
+      font-family: 'Cinzel', serif;
+      font-size: 1.6rem;
+      color: var(--gold);
+      font-weight: 700;
+    }
+    .stat-label {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    /* ── Badge chips ─────────────────────────────────── */
+    .tag-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .tag {
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      letter-spacing: 0.04em;
+    }
+    .tag.gold { border-color: var(--gold-dim); color: var(--gold); background: var(--gold-glow); }
+
+    /* ── Language Flags ──────────────────────────────── */
+    .lang-item { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .lang-label { font-size: 0.82rem; width: 100px; color: var(--text); }
+
+    /* ── Responsive ──────────────────────────────────── */
+    @media (max-width: 900px) {
+      :root { --sidebar-w: 240px; }
+    }
+    @media (max-width: 700px) {
+      .sidebar {
+        position: relative;
+        left: 0; top: 0; bottom: auto;
+        width: 100%;
+        border-radius: 0;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 16px;
+      }
+      .top-nav {
+        position: relative;
+        left: 0; right: 0; top: 0;
+        width: 100%;
+        border-radius: 0;
+      }
+      .main {
+        margin-left: 0;
+        margin-top: 0;
+        padding: 16px;
+      }
+      body { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Sidebar ─────────────────────────────────────── -->
+<aside class="sidebar">
+  <div class="profile-wrap">
+    <div class="profile-initials">RJG</div>
+  </div>
+  <div class="sidebar-name">Russell J. Gray</div>
+  <div class="sidebar-title">Wildlife Data Scientist</div>
+  <div class="sidebar-divider"></div>
+
+  <div class="sidebar-section-label">Contact</div>
+  <ul class="contact-list">
+    <li>
+      <a href="mailto:rjgrayecology@gmail.com">
+        <span class="icon-circle"><i class="fas fa-envelope"></i></span>
+        rjgrayecology@gmail.com
+      </a>
+    </li>
+    <li>
+      <a href="tel:+13868476107">
+        <span class="icon-circle"><i class="fas fa-phone"></i></span>
+        +1 386 847 6107
+      </a>
+    </li>
+    <li>
+      <a href="https://www.linkedin.com/in/rjgrayecology/" target="_blank">
+        <span class="icon-circle"><i class="fab fa-linkedin-in"></i></span>
+        rjgrayecology
+      </a>
+    </li>
+    <li>
+      <a href="https://www.researchgate.net/profile/Russell_Gray3" target="_blank">
+        <span class="icon-circle"><i class="fab fa-researchgate"></i></span>
+        ResearchGate
+      </a>
+    </li>
+  </ul>
+
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section-label">Links</div>
+  <ul class="contact-list">
+    <li>
+      <a href="https://www.udemy.com/course/ecology-in-r/" target="_blank">
+        <span class="icon-circle"><i class="fas fa-graduation-cap"></i></span>
+        Ecology in R Course
+      </a>
+    </li>
+    <li>
+      <a href="https://rjgrayecology.shinyapps.io/RJG_Web_CV/" target="_blank">
+        <span class="icon-circle"><i class="fas fa-chart-bar"></i></span>
+        Old Shiny CV
+      </a>
+    </li>
+  </ul>
+
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section-label">Education</div>
+  <ul class="contact-list" style="margin-bottom:0">
+    <li style="margin-bottom:12px">
+      <div style="font-size:0.78rem;color:var(--text);font-weight:600">BSc Geospatial Technologies</div>
+      <div style="font-size:0.7rem;color:var(--text-dim)">Unity Environmental University</div>
+    </li>
+    <li style="margin-bottom:12px">
+      <div style="font-size:0.78rem;color:var(--text);font-weight:600">Ecology Track</div>
+      <div style="font-size:0.7rem;color:var(--text-dim)">University of Belize</div>
+    </li>
+    <li>
+      <div style="font-size:0.78rem;color:var(--text);font-weight:600">A.A. General Biology</div>
+      <div style="font-size:0.7rem;color:var(--text-dim)">Eastern Florida State University</div>
+    </li>
+  </ul>
+</aside>
+
+<!-- ── Top Nav ─────────────────────────────────────── -->
+<nav class="top-nav">
+  <button class="nav-btn active" onclick="showPage('about', this)"><i class="fas fa-user"></i>About</button>
+  <button class="nav-btn" onclick="showPage('resume', this)"><i class="fas fa-briefcase"></i>Resume</button>
+  <button class="nav-btn" onclick="showPage('publications', this)"><i class="fas fa-book-open"></i>Publications</button>
+  <button class="nav-btn" onclick="showPage('grants', this)"><i class="fas fa-hand-holding-dollar"></i>Grants</button>
+  <button class="nav-btn" onclick="showPage('portfolio', this)"><i class="fas fa-layer-group"></i>Portfolio</button>
+  <button class="nav-btn" onclick="showPage('map', this); initMap();"><i class="fas fa-map-marked-alt"></i>Project Map</button>
+</nav>
+
+<!-- ── Main ────────────────────────────────────────── -->
+<main class="main">
+
+  <!-- ABOUT ─────────────────────────────────────── -->
+  <section id="about" class="page active">
+    <div class="hero-card">
+      <div class="hero-name">Russell J. Gray</div>
+      <div class="hero-subtitle">Wildlife Data Scientist &amp; Conservation Strategist</div>
+      <p class="hero-bio">
+        I am currently Head of Data for the Global Monitoring System under <strong style="color:var(--text)">ECOSOLVE / GI-TOC</strong>, 
+        coordinating expert analysts from 11 countries and their national, regional, and international law enforcement 
+        partners to detect and disrupt illegal wildlife trade networks. My work spans field ecology, machine learning, 
+        geospatial intelligence, OSINT, grant management, and AI-powered conservation tools.
+      </p>
+      <div class="stat-row">
+        <div class="stat-box">
+          <div class="stat-num">39+</div>
+          <div class="stat-label">Publications</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">9+</div>
+          <div class="stat-label">Grants Awarded</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">11</div>
+          <div class="stat-label">Countries Led</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">$3M+</div>
+          <div class="stat-label">Funds Managed</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">13+</div>
+          <div class="stat-label">Years Field XP</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-heading"><i class="fas fa-wrench"></i>Technical Skills</div>
+      <div class="skill-grid" id="skill-bars">
+        <div class="skill-item">
+          <div class="skill-label"><span>R / Statistical Analysis</span><span>95%</span></div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="95"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-label"><span>GIS / Remote Sensing</span><span>90%</span></div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="90"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-label"><span>Grant Writing &amp; Fundraising</span><span>90%</span></div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="90"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-label"><span>Project Management</span><span>90%</span></div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="90"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-label"><span>Machine Learning / AI</span><span>80%</span></div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="80"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-label"><span>Web Design / App Dev</span><span>80%</span></div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="80"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-label"><span>Ecology &amp; Field Research</span><span>100%</span></div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="100"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-label"><span>OSINT</span><span>85%</span></div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="85"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-label"><span>Drone / Photogrammetry</span><span>80%</span></div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="80"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-label"><span>Python / MATLAB / C#</span><span>55%</span></div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="55"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-heading"><i class="fas fa-language"></i>Languages</div>
+      <div class="skill-grid">
+        <div class="skill-item">
+          <div class="skill-label"><span>English (Native)</span><span>100%</span></div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="100"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-label"><span>Thai</span><span>50%</span></div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="50"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-label"><span>French</span><span>30%</span></div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="30"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-label"><span>Spanish</span><span>30%</span></div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="30"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-label"><span>Vietnamese</span><span>25%</span></div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="25"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-label"><span>Malay</span><span>15%</span></div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="15"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESUME ───────────────────────────────────── -->
+  <section id="resume" class="page">
+    <div class="card">
+      <div class="section-heading"><i class="fas fa-briefcase"></i>Work Experience</div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-title">Head of Data – ECOSOLVE / GI-TOC</div>
+          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2024 – Present &nbsp;|&nbsp; <i class="fas fa-globe"></i> Global</div>
+          <div class="tl-body">
+            <ul style="padding-left:16px">
+              <li>Coordinates teams of analysts from South Africa, Nigeria, Cameroon, Thailand, Indonesia, South Asia, MENA region, Brazil, Colombia, Mexico, and Czechia</li>
+              <li>Leads development of the Global Monitoring System, app hubs, and AI products for disruption of online illegal wildlife trade</li>
+              <li>Partners with national, regional, and international law enforcement agencies worldwide</li>
+            </ul>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-title">Science Advisor – Save Vietnam's Wildlife</div>
+          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2021 – 2024 &nbsp;|&nbsp; <i class="fas fa-map-marker-alt"></i> Vietnam</div>
+          <div class="tl-body">
+            <ul style="padding-left:16px">
+              <li>Led research on pangolin, small carnivore, and Asian elephant conservation; captive welfare and behavioral research</li>
+              <li>Guided release and recovery of 174 Critically Endangered pangolins and >100 threatened Viverrids, Mustelids, and Turtles</li>
+              <li>Established project designs, analytic frameworks, and M&amp;E systems across captive, veterinary, research, and anti-poaching departments</li>
+              <li>Wrote and managed 24 successful grants totalling >$3 million USD from National Geographic, Fondation Segre, WWF, IUCN, IWT Challenge Fund, and others</li>
+            </ul>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-title">Wildlife Conservation Consultant – R.J. Gray Ecology</div>
+          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2018 – 2024 &nbsp;|&nbsp; <i class="fas fa-globe"></i> International</div>
+          <div class="tl-body">
+            <ul style="padding-left:16px">
+              <li>Contract consulting in wildlife conservation planning, data analysis, and software engineering</li>
+              <li>Developed tools for anti-poaching units and environmental law enforcement</li>
+              <li>Developed online Ecology in R training (Udemy); held R training for University of Guyana and Liverpool John Moores University faculty</li>
+              <li>Supported 10 manuscripts with collaborators from Pakistan, Indonesia, Thailand, China, and Brazil</li>
+            </ul>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-title">Wildlife Biologist – CrocDocs, University of Florida</div>
+          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2017 – 2018 &nbsp;|&nbsp; <i class="fas fa-map-marker-alt"></i> Florida, USA</div>
+          <div class="tl-body">
+            <ul style="padding-left:16px">
+              <li>Airboat surveys, captures, morphometric and blood chemistry assessments of wild American crocodiles and alligators</li>
+              <li>Invasive species management: Spectacled caiman, Green iguana, Burmese pythons, Argentinian tegus; managed African rock python removal project</li>
+              <li>Radio-telemetry tracking of 10 Argentinian black and white tegus; rapid road surveys in Everglades &amp; Big Cypress NPs</li>
+            </ul>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-title">Project Lead – Toucan Ridge Ecology &amp; Education Society</div>
+          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2015 – 2016 &nbsp;|&nbsp; <i class="fas fa-map-marker-alt"></i> Belize</div>
+          <div class="tl-body">
+            <ul style="padding-left:16px">
+              <li>Established reptile and amphibian monitoring comparing agricultural, reclaimed, and natural forest habitat</li>
+              <li>Morphometric data on >100 snakes of >20 species; snake education programs for students and ecotourism operators</li>
+            </ul>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-title">Assistant Researcher – Khorat Museum</div>
+          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2014 – 2015 &nbsp;|&nbsp; <i class="fas fa-map-marker-alt"></i> Thailand</div>
+          <div class="tl-body">
+            <ul style="padding-left:16px">
+              <li>Database management for fossil wood specimens; biodiversity surveys at Bantak Petrified Forest Park</li>
+              <li>Assisted in establishing the Satun UNESCO Global Geopark application dossier</li>
+            </ul>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-title">Field Technician – Sakaerat Environmental Research Station</div>
+          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2013 – 2014 &nbsp;|&nbsp; <i class="fas fa-map-marker-alt"></i> Nakhon Ratchasima, Thailand</div>
+          <div class="tl-body">
+            <ul style="padding-left:16px">
+              <li>King cobra and green pit-viper radio-telemetry tracking; snake community ecology research</li>
+              <li>Set up and managed 16 trapping arrays; morphometric data from >300 snakes of >20 species</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-heading"><i class="fas fa-graduation-cap"></i>Education</div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-title">BSc. Environmental Geospatial Technologies</div>
+          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2021 &nbsp;|&nbsp; Unity Environmental University, Maine</div>
+          <div class="tl-body">Thesis: Species Distribution Modelling of <em>Porthidium yucatanicum</em> Reveals Falsified Museum Records</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-title">Ecology &amp; Biology</div>
+          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2014 – 2016 &nbsp;|&nbsp; University of Belize</div>
+          <div class="tl-body">Ecology and Evolution track</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-title">A.A. General Biology</div>
+          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2009 – 2011 &nbsp;|&nbsp; Eastern Florida State University</div>
+          <div class="tl-body">Biology and Chemistry track</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PUBLICATIONS ─────────────────────────────── -->
+  <section id="publications" class="page">
+    <div class="card">
+      <div class="section-heading"><i class="fas fa-book-open"></i>Peer-Reviewed Articles</div>
+      <ul class="pub-list">
+        <li class="pub-item"><div class="pub-num">#1 · 2025</div><span class="pub-author-highlight">Gray, R. J.</span>, Gazagne, E., Tilker, A., Van Thong, P., &amp; Bao, T. Q. Prioritising natural heritage: evaluating distribution, threats, and conservation needs of species recovery targets in Vietnam. <em>Biodiversity and Conservation</em>, 34(12), 4289–4308.</li>
+        <li class="pub-item"><div class="pub-num">#2 · 2025</div>Lieb, Z. E., Meijaard, E., Brodie, J. F., … <span class="pub-author-highlight">Gray, R. J.</span>, … &amp; Luskin, M. S. Mapping multiple wild pig species' population dynamics in Southeast Asia during the African swine fever outbreak (2018–2024). <em>Conservation Letters</em>, 18(3), e13105.</li>
+        <li class="pub-item"><div class="pub-num">#3 · 2024</div>Gazagne, E., <span class="pub-author-highlight">Gray, R. J.</span>, Wich, S., Hambuckers, A., &amp; Brotcorne, F. Development of a global thermal detection index to prioritize primate research with thermal drones. <em>Scientific Reports</em>, 14(1), 27963.</li>
+        <li class="pub-item"><div class="pub-num">#4 · 2024</div><span class="pub-author-highlight">Gray, R. J.</span>, Nguyen, T.V., Cao, L.N. et al. Camera trapping in Southern Vietnam: unveiling relative abundance, activity patterns, and conservation challenges of globally threatened pangolins and small carnivores. <em>European Journal of Wildlife Research</em>, 70, 50.</li>
+        <li class="pub-item"><div class="pub-num">#5 · 2024</div>Trinh, T. M., <span class="pub-author-highlight">Gray, R.</span>, Tran, T. T. H., Le, K. L., Cao, N. L., &amp; Willcox, D. The impacts of commercial civet farming in central Vietnam. <em>Small Carnivore Conservation</em>, 62.</li>
+        <li class="pub-item"><div class="pub-num">#6 · 2023</div><span class="pub-author-highlight">Gray, R. J.</span> &amp; Gazagne, E. Feasibility assessment of commercially available UAV sensor and payload functions for crocodile population surveys. <em>Herpetology Notes</em>, 16.</li>
+        <li class="pub-item"><div class="pub-num">#7 · 2023</div>Cao, L., <span class="pub-author-highlight">Gray, R.</span>, Pham, T., et al. Records of Greater Hog Badger <em>Arctonyx collaris</em> from northern Vietnam and a discussion of its status in the country. <em>Small Carnivore Conservation</em>, 61.</li>
+        <li class="pub-item"><div class="pub-num">#8 · 2023</div>Rais, M., Nawaz, M. A., <span class="pub-author-highlight">Gray, R. J.</span>, et al. Niche suitability and spatial distribution patterns of anurans in a unique Ecoregion mosaic of Northern Pakistan. <em>PLoS One</em>, 18(6), e0285867.</li>
+        <li class="pub-item"><div class="pub-num">#9 · 2023</div><span class="pub-author-highlight">Gray, R. J.</span>, Van Le, D., Nguyen, H. T. T., et al. Home ranges and activity patterns of Sunda pangolins <em>Manis javanica</em> in Vietnam. <em>Journal of Asia-Pacific Biodiversity</em>.</li>
+        <li class="pub-item"><div class="pub-num">#10 · 2023</div>Gazagne, E., <span class="pub-author-highlight">Gray, R. J.</span>, Ratajszczak, R., et al. Unmanned aerial vehicles (UAVs) with thermal infrared (TIR) sensors are effective for monitoring and counting threatened Vietnamese primates. <em>Primates</em>, 1–7.</li>
+        <li class="pub-item"><div class="pub-num">#11 · 2023</div>Van Pham, T., Trinh, M. T., <span class="pub-author-highlight">Gray, R. J.</span>, et al. Southern extension of raccoon dog range in Vietnam with comments on its conservation status. <em>European Journal of Wildlife Research</em>, 69(2), 22.</li>
+        <li class="pub-item"><div class="pub-num">#12 · 2023</div>Mfossa, D. M., Gazagne, E., <span class="pub-author-highlight">Gray, R. J.</span>, et al. Montane grassland resources drive gorilla nesting behaviors in the Ebo forest, Cameroon. <em>European Journal of Wildlife Research</em>, 69(2), 31.</li>
+        <li class="pub-item"><div class="pub-num">#13 · 2023</div>Nguyen, H. T., Willcox, D., <span class="pub-author-highlight">Gray, R.</span>, et al. Living on the Edge: The Impacts of Buffer Zones on Wetland Carnivores in Vietnam. (Preprint)</li>
+        <li class="pub-item"><div class="pub-num">#14 · 2022</div><span class="pub-author-highlight">Gray, R.</span>, Van Pham, T., Lo, B. T., et al. Evidence of Spotted Linsang <em>Prionodon pardicolor</em> post-weaning parental care. <em>Small Carnivore Conservation</em>, 60.</li>
+        <li class="pub-item"><div class="pub-num">#15 · 2022</div>Cao, L. N., <span class="pub-author-highlight">Gray, R. J.</span>, et al. Confirmed evidence of marbled cat in Pu Mat National Park, Vietnam. <em>Cat News</em>, 75, 25–28.</li>
+        <li class="pub-item"><div class="pub-num">#16 · 2022</div>Feijó, A., Karlsson, C. M., <span class="pub-author-highlight">Gray, R.</span>, Yang, Q., &amp; Hughes, A. C. Extreme-sized anurans are more prone to climate-driven extinctions. <em>Climate Change Ecology</em>, 100062.</li>
+        <li class="pub-item"><div class="pub-num">#17 · 2022</div>Mulero-Pázmány, M., Martínez-de Dios, J. R., Popa-Lisseanu, A. G., <span class="pub-author-highlight">Gray, R. J.</span>, et al. Development of a Fixed-Wing Drone System for Aerial Insect Sampling. <em>Drones</em>, 6(8), 189.</li>
+        <li class="pub-item"><div class="pub-num">#18 · 2022</div>Thi, M. T., <span class="pub-author-highlight">Gray, R.</span>, et al. Commercial civet farming practices and conservation impacts in central Vietnam. (Pre-print in review)</li>
+        <li class="pub-item"><div class="pub-num">#19 · 2022</div><span class="pub-author-highlight">Gray, R. J.</span> Settling the score: notes on the 60-year literature debate of <em>Porthidium yucatanicum</em> distribution. <em>Herpetology Notes</em>, 15, 387–389.</li>
+        <li class="pub-item"><div class="pub-num">#20 · 2022</div><span class="pub-author-highlight">Gray, R.</span>, et al. Status, threats, and overlap of globally important pangolins and small carnivores in a disturbed wetland mosaic of southern Vietnam. (Pre-print in review)</li>
+        <li class="pub-item"><div class="pub-num">#21 · 2022</div>Hansen, M.F., Ang, A., …<span class="pub-author-highlight">Gray, R.</span>, et al. <em>Macaca fascicularis</em>. IUCN Red List of Threatened Species 2022: e.T12551A199563077.</li>
+        <li class="pub-item"><div class="pub-num">#22 · 2022</div><span class="pub-author-highlight">Gray, R.</span> &amp; Karlsson, C. 101 years of biofluorescent animal studies: trends in literature, novel hypotheses, and best practices moving forward.</li>
+        <li class="pub-item"><div class="pub-num">#23 · 2022</div>Lê, N., Hoang, T., Tran, T., … &amp; <span class="pub-author-highlight">Gray, R. J.</span> Renal morphophysiology is not a significant correlate of observable body condition in Masked Palm Civets. (Pre-print)</li>
+        <li class="pub-item"><div class="pub-num">#24 · 2021</div>Trịnh, T. M., … &amp; <span class="pub-author-highlight">Gray, R. J.</span> The effectiveness of policies for addressing Covid-19 impacts on wildlife conservation in Vietnam. <em>CIFOR Working Paper</em>.</li>
+        <li class="pub-item"><div class="pub-num">#25 · 2021</div>Durso, A. M., de Castañeda, R. R., … <span class="pub-author-highlight">Gray, R. J.</span>, &amp; Bolon, I. Citizen science and online data: Opportunities and challenges for snake ecology and action against snakebite. <em>Toxicon: X</em>, 100071.</li>
+        <li class="pub-item"><div class="pub-num">#26 · 2021</div>Tozetti, A. M., … <span class="pub-author-highlight">Gray, R.</span>, &amp; Entiauspe-Neto, O. M. Evolutionary dynamics shape two passive defensive mechanisms in Neotropical snake radiations. <em>Phyllomedusa</em>, 20(1), 3–13.</li>
+        <li class="pub-item"><div class="pub-num">#27 · 2021</div>Oliveira, H. F. M., Peters, S. L., <span class="pub-author-highlight">Gray, R. J.</span>, Novaes, R. L. M. First report of intraspecific variation in wing translucency for a Neotropical bat species. <em>Journal of Bat Research and Conservation</em>.</li>
+        <li class="pub-item"><div class="pub-num">#28 · 2021</div><span class="pub-author-highlight">Gray, R. J.</span> &amp; Dresser, T. W. Male combat in the striped kukri snake <em>Oligodon teniatus</em>. <em>Herpetological Bulletin</em>, 155, 30–31.</li>
+        <li class="pub-item"><div class="pub-num">#29 · 2021</div>Entiauspe-Neto, O. M., Koch, C., <span class="pub-author-highlight">Gray, R. J.</span>, et al. Taxonomic status of <em>Apostolepis tertulianobeui</em> based on an integrative revision of <em>A. assimilis</em>. <em>Zoologischer Anzeiger</em>, 291, 123–138.</li>
+        <li class="pub-item"><div class="pub-num">#30 · 2021</div>Wilson, G., <span class="pub-author-highlight">Gray, R. J.</span>, Radinal, R. et al. Between a rock and a hard place: rugged terrain and human disturbance affect Sumatran elephants in Aceh. <em>Biodiversity and Conservation</em>.</li>
+        <li class="pub-item"><div class="pub-num">#31 · 2020</div>Saeed, M., Rais, M., <span class="pub-author-highlight">Gray, R. J.</span>, et al. Rise in temperature causes decreased fitness and higher extinction risks in endemic frogs in northern Pakistan. <em>Journal of Thermal Biology</em>, 102809.</li>
+        <li class="pub-item"><div class="pub-num">#32 · 2020</div>Wilson, G., <span class="pub-author-highlight">Gray, R. J.</span>, &amp; Sofyan, H. Identifying variation in utilization density estimators and home ranges of elephant clans in Aceh, Sumatra. <em>European Journal of Wildlife Research</em>, 66(6), 1–20.</li>
+        <li class="pub-item"><div class="pub-num">#33 · 2020</div><span class="pub-author-highlight">Gray, R. J.</span> Sorry, we're open: Golden open-access and inequality in non-human biological sciences. <em>Scientometrics</em>.</li>
+        <li class="pub-item"><div class="pub-num">#34 · 2020</div><span class="pub-author-highlight">Gray, R. J.</span> Exotic Hobos: Release, escape, and potential secondary dispersal of African red-headed agamas through Florida railway systems. <em>BioRxiv</em>.</li>
+        <li class="pub-item"><div class="pub-num">#35 · 2020</div><span class="pub-author-highlight">Gray, R. J.</span> First report of reproduction in the wild for <em>Acanthosaura cardamomensis</em> in Thailand. <em>Herpetology Notes</em>, 13, 185–186.</li>
+        <li class="pub-item"><div class="pub-num">#36 · 2019</div><span class="pub-author-highlight">Gray, R. J.</span> Biofluorescent lateral patterning on the Mossy Bushfrog (<em>Philautus macroscelis</em>): first report of biofluorescence in a rhacophorid frog. <em>Herpetology Notes</em>, 12, 363–364.</li>
+        <li class="pub-item"><div class="pub-num">#37 · 2017</div>Hofmann, E. P., <span class="pub-author-highlight">Gray, R. J.</span>, Wilson, L. D., &amp; Townsend, J. H. Discovery of the first male specimen of <em>Tantilla hendersoni</em> from a new locality in central Belize. <em>Herpetology Notes</em>, 10, 53–57.</li>
+        <li class="pub-item"><div class="pub-num">#38 · 2017</div><span class="pub-author-highlight">Gray, R.</span> &amp; Strine, C. T. Herpetofaunal assemblages of a lowland broadleaf forest and lime orchard in Stann Creek, Belize. <em>ZooKeys</em>, (707), 131.</li>
+        <li class="pub-item"><div class="pub-num">#39 · 2017</div><span class="pub-author-highlight">Gray, R. J.</span> &amp; Hofmann, E. P. Two new herpetofaunal records for Stann Creek District, Belize. <em>Mesoamerican Herpetology</em>.</li>
+      </ul>
+      <div style="margin-top:20px">
+        <div class="section-heading" style="margin-top:10px"><i class="fas fa-book"></i>Books</div>
+        <div class="pub-item"><div class="pub-num">#1 · 2018</div><span class="pub-author-highlight">Gray, R.</span> (2018). <em>Fungi of Belize.</em> Global Explorer Press.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GRANTS ───────────────────────────────────── -->
+  <section id="grants" class="page">
+    <div class="card">
+      <div class="section-heading"><i class="fas fa-trophy"></i>Grants Awarded (as PI / Co-PI)</div>
+      <div class="grant-item"><span class="grant-year">2022</span><div class="grant-text"><strong>IWT Challenge Fund</strong> — Dismantling illegal pangolin trade in Vietnam <span style="color:var(--gold)">£999,250</span></div></div>
+      <div class="grant-item"><span class="grant-year">2022–23</span><div class="grant-text"><strong>Rufford Small Grants</strong> — In search of the Critically Endangered Chinese pangolin in Northern Vietnam <span style="color:var(--gold)">€12,000</span></div></div>
+      <div class="grant-item"><span class="grant-year">2022</span><div class="grant-text"><strong>Rufford Small Grants</strong> — Poachers, patrols, and protection: An integrative solution to Owston's Civet conservation in Vietnam <span style="color:var(--gold)">€5,960</span></div></div>
+      <div class="grant-item"><span class="grant-year">2023</span><div class="grant-text"><strong>Mohamed bin Zayed Conservation Fund</strong> — Applying new conservation technologies for human-elephant conflict mitigation in Southern Vietnam <span style="color:var(--gold)">$10,000</span></div></div>
+      <div class="grant-item"><span class="grant-year">2023</span><div class="grant-text"><strong>Dieren Park Amersfoort Wildlife Fund</strong> — A novel and scalable approach to human-elephant conflict mitigation and elephant tourism <span style="color:var(--gold)">€5,500</span></div></div>
+      <div class="grant-item"><span class="grant-year">2021</span><div class="grant-text"><strong>CIFOR — Covid-19 Conservation Challenges</strong> <span style="color:var(--gold)">$5,000</span></div></div>
+      <div class="grant-item"><span class="grant-year">2021</span><div class="grant-text"><strong>IUCN Global Protected and Conserved Areas Programme / IUCN Vietnam Protected Area Solutions</strong> <span style="color:var(--gold)">$25,000</span></div></div>
+      <div class="grant-item"><span class="grant-year">2023</span><div class="grant-text"><strong>Re-Earth</strong> — Conservation and Community Empowerment in Cat Tien: Saving Wildlife and Forests <span style="color:var(--gold)">€6,000</span></div></div>
+      <div class="grant-item"><span class="grant-year">2023</span><div class="grant-text"><strong>People's Trust For Endangered Species</strong> — Enhancing Captive/Semi-wild Enrichment for Release Success of Sunda and Chinese Pangolins <span style="color:var(--gold)">€15,000</span></div></div>
+    </div>
+
+    <div class="card">
+      <div class="section-heading"><i class="fas fa-tasks"></i>Grants / Budgets Managed</div>
+      <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:18px">In addition to grants above, I have managed organizational grants, designed workplans, budgets, implementation, M&amp;E, and reports for:</p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px">
+        <div class="grant-item" style="flex:1;min-width:200px"><span class="grant-year">~€600K</span><div class="grant-text"><strong>Fondation Segre</strong></div></div>
+        <div class="grant-item" style="flex:1;min-width:200px"><span class="grant-year">~$1.4M</span><div class="grant-text"><strong>USAID</strong></div></div>
+        <div class="grant-item" style="flex:1;min-width:200px"><span class="grant-year">~$400K</span><div class="grant-text"><strong>Full Circle Foundation</strong></div></div>
+        <div class="grant-item" style="flex:1;min-width:200px"><span class="grant-year">~€200K</span><div class="grant-text"><strong>Oak Foundation</strong></div></div>
+        <div class="grant-item" style="flex:1;min-width:200px"><span class="grant-year">~$300K</span><div class="grant-text"><strong>Conservation Global</strong></div></div>
+        <div class="grant-item" style="flex:1;min-width:200px"><span class="grant-year">~$100K</span><div class="grant-text"><strong>Synchronicity Earth</strong></div></div>
+        <div class="grant-item" style="flex:1;min-width:200px"><span class="grant-year">~$100K</span><div class="grant-text"><strong>David Shephard Wildlife Fund</strong></div></div>
+        <div class="grant-item" style="flex:1;min-width:200px"><span class="grant-year">~$100K</span><div class="grant-text"><strong>Mandai Nature</strong></div></div>
+        <div class="grant-item" style="flex:1;min-width:200px"><span class="grant-year">$30K</span><div class="grant-text"><strong>National Geographic</strong></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PORTFOLIO ────────────────────────────────── -->
+  <section id="portfolio" class="page">
+    <div class="card">
+      <div class="section-heading"><i class="fas fa-layer-group"></i>Project Portfolio</div>
+      <div class="portfolio-grid">
+        <div class="portfolio-card" onclick="window.open('https://www.udemy.com/course/ecology-in-r/','_blank')">
+          <div class="portfolio-card-img" style="background:#1a2a1a"><i class="fas fa-r-project" style="color:#276dc3"></i></div>
+          <div class="portfolio-card-body">
+            <div class="portfolio-card-title">Ecology in R — Udemy Course</div>
+            <div class="portfolio-card-desc">Full online course covering R programming for ecological data analysis, statistics, GIS, and machine learning.</div>
+            <span class="portfolio-card-link"><i class="fas fa-external-link-alt"></i> udemy.com/course/ecology-in-r</span>
+          </div>
+        </div>
+        <div class="portfolio-card" onclick="window.open('https://rpubs.com/Russell_Gray/VNM_Key_Species','_blank')">
+          <div class="portfolio-card-img"><i class="fas fa-map-marked-alt"></i></div>
+          <div class="portfolio-card-body">
+            <div class="portfolio-card-title">Vietnam Conservation Priorities</div>
+            <div class="portfolio-card-desc">Interactive analysis of key species distribution and conservation priorities across Vietnam's protected areas.</div>
+            <span class="portfolio-card-link"><i class="fas fa-external-link-alt"></i> RPubs report</span>
+          </div>
+        </div>
+        <div class="portfolio-card" onclick="window.open('https://rpubs.com/Russell_Gray/invasivereptiles','_blank')">
+          <div class="portfolio-card-img"><i class="fas fa-dragon"></i></div>
+          <div class="portfolio-card-body">
+            <div class="portfolio-card-title">Florida Invasive Reptiles</div>
+            <div class="portfolio-card-desc">Spatial analysis of invasive reptile spread through Florida, including railway corridor dispersal of agamas.</div>
+            <span class="portfolio-card-link"><i class="fas fa-external-link-alt"></i> RPubs report</span>
+          </div>
+        </div>
+        <div class="portfolio-card" onclick="window.open('https://rjgrayecology.shinyapps.io/CamTrapApp/','_blank')">
+          <div class="portfolio-card-img"><i class="fas fa-camera"></i></div>
+          <div class="portfolio-card-body">
+            <div class="portfolio-card-title">Camera Trap Study Design App</div>
+            <div class="portfolio-card-desc">Shiny application to assist researchers with optimal camera trap placement and study design.</div>
+            <span class="portfolio-card-link"><i class="fas fa-external-link-alt"></i> Shiny App</span>
+          </div>
+        </div>
+        <div class="portfolio-card" onclick="window.open('https://rjgrayecology.shinyapps.io/VN_PA_Habitats/','_blank')">
+          <div class="portfolio-card-img"><i class="fas fa-tree"></i></div>
+          <div class="portfolio-card-body">
+            <div class="portfolio-card-title">Vietnam PA Habitats</div>
+            <div class="portfolio-card-desc">Interactive explorer of habitat types across Vietnam's protected area network.</div>
+            <span class="portfolio-card-link"><i class="fas fa-external-link-alt"></i> Shiny App</span>
+          </div>
+        </div>
+        <div class="portfolio-card" onclick="window.open('https://rpubs.com/Russell_Gray/VNM_PA_SPLIST','_blank')">
+          <div class="portfolio-card-img"><i class="fas fa-list-ul"></i></div>
+          <div class="portfolio-card-body">
+            <div class="portfolio-card-title">Vietnam PA Species List</div>
+            <div class="portfolio-card-desc">Comprehensive species inventory for Vietnamese protected areas with threat status analysis.</div>
+            <span class="portfolio-card-link"><i class="fas fa-external-link-alt"></i> RPubs report</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAP ──────────────────────────────────────── -->
+  <section id="map" class="page">
+    <div class="card">
+      <div class="section-heading"><i class="fas fa-globe-asia"></i>Project Map</div>
+      <p style="font-size:0.8rem;color:var(--text-dim);margin-bottom:16px">
+        Geographic distribution of fieldwork, collaborations, and research publications.
+        Hover or click markers to explore.
+      </p>
+      <div id="map"></div>
+      <div class="map-hover-label" id="map-label">Hover a marker to see publication details.</div>
+    </div>
+  </section>
+
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  // ── Navigation ─────────────────────────────────────
+  function showPage(id, btn) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+    animateSkillBars();
+  }
+
+  // ── Skill bar animation ────────────────────────────
+  function animateSkillBars() {
+    document.querySelectorAll('.skill-bar-fill').forEach(bar => {
+      const w = bar.dataset.width;
+      bar.style.width = w + '%';
+    });
+  }
+  // Animate on load for first page
+  window.addEventListener('load', animateSkillBars);
+
+  // ── Leaflet Map ────────────────────────────────────
+  let mapInitialized = false;
+  function initMap() {
+    if (mapInitialized) return;
+    mapInitialized = true;
+
+    const map = L.map('map', { zoomControl: true }).setView([10, 105], 3);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '© OpenStreetMap © CARTO',
+      maxZoom: 19
+    }).addTo(map);
+
+    const goldIcon = L.divIcon({
+      html: '<div style="width:12px;height:12px;border-radius:50%;background:#d4af37;box-shadow:0 0 8px #d4af37;border:2px solid #a67c00"></div>',
+      className: '',
+      iconSize: [12, 12],
+      iconAnchor: [6, 6]
+    });
+
+    const papers = [
+      { lat: 16, lng: 106, title: "Gray et al. 2025 – Prioritising natural heritage in Vietnam (Biodivers Conserv)" },
+      { lat: 5,  lng: 115, title: "Lieb, Meijaard, … Gray et al. 2025 – Wild pig population dynamics SE Asia during ASF (Conserv Lett)" },
+      { lat: 1,  lng: 103, title: "Gazagne, Gray et al. 2024 – Global thermal detection index for primate research (Sci Rep)" },
+      { lat: 10, lng: 106, title: "Gray et al. 2024 – Camera trapping of pangolins and small carnivores in Southern Vietnam (Eur J Wildl Res)" },
+      { lat: 15, lng: 108, title: "Trinh, Gray et al. 2024 – Impacts of commercial civet farming in central Vietnam (Small Carnivore Conserv)" },
+      { lat: 25, lng: 33,  title: "Gray & Gazagne 2023 – UAV feasibility for crocodile surveys (Herpetology Notes)" },
+      { lat: 22, lng: 104, title: "Cao, Gray et al. 2023 – Greater Hog Badger records from northern Vietnam (Small Carnivore Conserv)" },
+      { lat: 35, lng: 73,  title: "Rais, Nawaz, Gray et al. 2023 – Anuran niche suitability in Northern Pakistan (PLoS One)" },
+      { lat: 11, lng: 107, title: "Gray et al. 2023 – Home ranges and activity patterns of Sunda pangolins in Vietnam (J Asia-Pacific Biodivers)" },
+      { lat: 21, lng: 105, title: "Gazagne, Gray et al. 2023 – UAVs and thermal sensors for Vietnamese primate monitoring (Primates)" },
+      { lat: 18, lng: 106, title: "Van Pham, Gray et al. 2023 – Raccoon dog range extension in Vietnam (Eur J Wildl Res)" },
+      { lat: 4,  lng: 9,   title: "Mfossa, Gazagne, Gray et al. 2023 – Gorilla nesting in the Ebo Forest, Cameroon (Eur J Wildl Res)" },
+      { lat: 12, lng: 107, title: "Nguyen, Willcox, Gray et al. 2023 – Buffer zones and wetland carnivores in Vietnam (preprint)" },
+      { lat: 12, lng: 108, title: "Gray et al. 2022 – Spotted Linsang post-weaning parental care (Small Carnivore Conserv)" },
+      { lat: 19, lng: 104, title: "Cao, Gray et al. 2022 – Marbled cat confirmed in Pu Mat NP, Vietnam (Cat News)" },
+      { lat: -3, lng: 25,  title: "Feijó, Karlsson, Gray et al. 2022 – Extreme-sized anurans and climate-driven extinctions (Climate Change Ecology)" },
+      { lat: 40, lng: -3,  title: "Mulero-Pázmány, … Gray et al. 2022 – Fixed-wing drone for aerial insect sampling (Drones)" },
+      { lat: 16, lng: 108, title: "Gray et al. 2022 – Status and threats of pangolins and small carnivores in southern Vietnam (preprint)" },
+      { lat: 3,  lng: 101, title: "Hansen, Ang, … Gray et al. 2022 – Macaca fascicularis IUCN Red List assessment" },
+      { lat: -10,lng: -50, title: "Gray & Karlsson 2022 – 101 years of biofluorescent animal studies" },
+      { lat: 12, lng: 109, title: "Lê, Hoang, … Gray 2022 – Renal morphophysiology in Masked Palm Civets (preprint)" },
+      { lat: 21, lng: 105, title: "Trịnh … Gray 2021 – Covid-19 impacts on wildlife conservation in Vietnam (CIFOR)" },
+      { lat: -15,lng: -65, title: "Durso, … Gray, Bolon 2021 – Citizen science for snake ecology and snakebite (Toxicon: X)" },
+      { lat: -25,lng: -55, title: "Tozetti, … Gray et al. 2021 – Defensive mechanisms in Neotropical snakes (Phyllomedusa)" },
+      { lat: -10,lng: -40, title: "Oliveira, Peters, Gray et al. 2021 – Wing translucency in a Neotropical bat (J Bat Res Conserv)" },
+      { lat: 15, lng: 103, title: "Gray & Dresser 2021 – Male combat in striped kukri snake Oligodon teniatus (Herp Bulletin)" },
+      { lat: -20,lng: -50, title: "Entiauspe-Neto, Koch, Gray et al. 2021 – Revision of Apostolepis assimilis (Zoologischer Anzeiger)" },
+      { lat: 4.5,lng: 97,  title: "Wilson, Gray et al. 2021 – Rugged terrain and human disturbance affect Sumatran elephants (Biodivers Conserv)" },
+      { lat: 36, lng: 74,  title: "Saeed, Rais, Gray et al. 2020 – Temperature rise and frog extinctions in northern Pakistan (J Thermal Biol)" },
+      { lat: 4.3,lng: 97.5,title: "Wilson, Gray & Sofyan 2020 – Utilization density of Sumatran elephant clans in Aceh (Eur J Wildl Res)" },
+      { lat: 51, lng: 0,   title: "Gray 2020 – Golden open-access and inequality in non-human biological sciences (Scientometrics)" },
+      { lat: 25, lng: -81, title: "Gray 2020 – Agama picticauda dispersal through Florida railway systems (BioRxiv)" },
+      { lat: 14, lng: 101, title: "Gray 2020 – First reproduction record for Acanthosaura cardamomensis in Thailand (Herpetology Notes)" },
+      { lat: 13, lng: 102, title: "Gray 2019 – Biofluorescence in the Mossy Bushfrog (Herpetology Notes)" },
+      { lat: 17, lng: -88, title: "Hofmann, Gray et al. 2017 – First male Tantilla hendersoni specimen from Belize (Herpetology Notes)" },
+      { lat: 17, lng: -88.5,title: "Gray & Strine 2017 – Herpetofaunal assemblages in Stann Creek, Belize (ZooKeys)" },
+      { lat: 17, lng: -88.2,title: "Gray & Hofmann 2017 – Two new herpetofaunal records for Stann Creek, Belize (Mesoamerican Herpetology)" },
+    ];
+
+    papers.forEach(p => {
+      const marker = L.marker([p.lat, p.lng], { icon: goldIcon }).addTo(map);
+      marker.on('mouseover', () => {
+        document.getElementById('map-label').innerHTML =
+          '<strong style="color:#d4af37">Gray, R. J.</strong> — ' + p.title;
+      });
+      marker.on('mouseout', () => {
+        document.getElementById('map-label').textContent = 'Hover a marker to see publication details.';
+      });
+      marker.bindPopup('<div style="color:#1e2029;font-size:0.8rem;max-width:260px">' + p.title + '</div>');
+    });
+  }
+</script>
+</body>
+</html>
