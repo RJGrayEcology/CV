@@ -667,7 +667,7 @@
   </ul>
 </aside>
 
-<!-- ── Top Nav ─────────────────────────────────────── -->
+<!-- ── Top Nav (Career Matches removed) ─────────────── -->
 <nav class="top-nav">
   <button class="nav-btn active" onclick="showPage('about', this)"><i class="fas fa-user"></i>About</button>
   <button class="nav-btn" onclick="showPage('resume', this)"><i class="fas fa-briefcase"></i>Resume</button>
@@ -675,7 +675,6 @@
   <button class="nav-btn" onclick="showPage('grants', this)"><i class="fas fa-hand-holding-dollar"></i>Grants</button>
   <button class="nav-btn" onclick="showPage('portfolio', this)"><i class="fas fa-layer-group"></i>Portfolio</button>
   <button class="nav-btn" onclick="showPage('dashboard', this)"><i class="fas fa-chart-line"></i>Dashboard</button>
-  <button class="nav-btn" onclick="showPage('career', this)"><i class="fas fa-briefcase"></i>Career Matches</button>
 </nav>
 
 <!-- ── Main ────────────────────────────────────────── -->
@@ -807,27 +806,6 @@
         style="width:100%;height:920px;border:1px solid var(--border);border-radius:10px;background:var(--surface2)"
         loading="lazy"
       ></iframe>
-    </div>
-  </section>
-
-  <!-- CAREER MATCHES ────────────────────────────── -->
-  <section id="career" class="page">
-    <div class="card">
-      <div class="section-heading"><i class="fas fa-briefcase"></i>Career Matches</div>
-      <div class="grant-item" style="margin-top:14px">
-        <span class="grant-year">Sources</span>
-        <div class="grant-text"><strong>Remotive</strong> and <strong>Arbeitnow</strong> public job feeds with client-side skill matching.</div>
-      </div>
-      <div class="tag-list">
-        <span class="tag">OSINT</span>
-        <span class="tag">Wildlife Intelligence</span>
-        <span class="tag">Data Science</span>
-        <span class="tag">GIS</span>
-        <span class="tag">Conservation Tech</span>
-        <span class="tag">Conservation</span>
-      </div>
-      <div id="career-status" style="font-size:0.75rem;color:var(--text-dim);margin-top:14px">Loading career matches…</div>
-      <div id="career-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:10px"></div>
     </div>
   </section>
 
@@ -1192,7 +1170,6 @@
     document.getElementById(id).classList.add('active');
     btn.classList.add('active');
     animateSkillBars();
-    if (id === 'career') loadCareerMatches();
   }
 
   // ── Skill bar animation ────────────────────────────
@@ -1207,90 +1184,6 @@
 
   // ── Leaflet Map ────────────────────────────────────
   let mapInitialized = false;
-  let careerLoaded = false;
-
-  async function loadCareerMatches() {
-    if (careerLoaded) return;
-    careerLoaded = true;
-
-    const status = document.getElementById('career-status');
-    const list = document.getElementById('career-list');
-    if (!status || !list) return;
-
-    const keywords = [
-      'wildlife','conservation','intelligence','osint','geospatial','gis',
-      'data scientist','machine learning','threat','analyst','environmental'
-    ];
-
-    function scoreJob(text) {
-      const t = (text || '').toLowerCase();
-      return keywords.reduce((n, k) => n + (t.includes(k) ? 1 : 0), 0);
-    }
-
-    function renderJobs(jobs) {
-      if (!jobs.length) {
-        status.textContent = 'No relevant jobs found in current feeds.';
-        return;
-      }
-      status.textContent = `Showing ${jobs.length} matched roles (auto-filtered by profile keywords).`;
-      list.innerHTML = jobs.slice(0, 24).map(j => `
-        <a href="${j.url}" target="_blank" style="text-decoration:none;color:inherit">
-          <div class="cap-card">
-            <div class="cap-title">${j.title}</div>
-            <div class="cap-body"><strong>${j.company}</strong> · ${j.location}</div>
-            <div class="cap-body" style="margin-top:8px">${j.source} · Score: ${j.score}</div>
-          </div>
-        </a>
-      `).join('');
-    }
-
-    try {
-      const [remotiveRes, arbeitRes] = await Promise.allSettled([
-        fetch('https://remotive.com/api/remote-jobs?search=data'),
-        fetch('https://www.arbeitnow.com/api/job-board-api')
-      ]);
-
-      const rows = [];
-
-      if (remotiveRes.status === 'fulfilled' && remotiveRes.value.ok) {
-        const data = await remotiveRes.value.json();
-        (data.jobs || []).forEach(j => {
-          const text = `${j.title} ${j.company_name} ${j.category || ''} ${j.description || ''}`;
-          const score = scoreJob(text);
-          if (score > 0) rows.push({
-            title: j.title,
-            company: j.company_name || 'Unknown',
-            location: j.candidate_required_location || 'Remote',
-            url: j.url,
-            source: 'Remotive',
-            score
-          });
-        });
-      }
-
-      if (arbeitRes.status === 'fulfilled' && arbeitRes.value.ok) {
-        const data = await arbeitRes.value.json();
-        (data.data || []).forEach(j => {
-          const text = `${j.title} ${j.company_name} ${(j.tags || []).join(' ')} ${j.description || ''}`;
-          const score = scoreJob(text);
-          if (score > 0) rows.push({
-            title: j.title,
-            company: j.company_name || 'Unknown',
-            location: j.location || 'Remote',
-            url: j.url,
-            source: 'Arbeitnow',
-            score
-          });
-        });
-      }
-
-      rows.sort((a, b) => b.score - a.score);
-      renderJobs(rows);
-    } catch (err) {
-      status.textContent = 'Unable to load jobs right now. Please try again later.';
-    }
-  }
-
   function initMap() {
     if (mapInitialized) return;
     mapInitialized = true;
