@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Russell J. Gray – Digital CV</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&amp;family=Raleway:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@6.16.0/dist/maplibre-gl.css">
 
   <style>
     /* ── Reset & Tokens ─────────────────────────────── */
@@ -451,6 +451,18 @@
       border-radius: 10px;
       border: 1px solid var(--border);
     }
+    #map { background: #141519; overflow: hidden; }
+    .publication-marker {
+      width: 24px; height: 24px; padding: 6px; border: 0;
+      background: transparent; cursor: pointer;
+    }
+    .publication-marker::before {
+      content: ''; display: block; width: 12px; height: 12px;
+      border-radius: 50%; background: var(--gold);
+      border: 2px solid var(--gold-dim); box-shadow: 0 0 8px var(--gold);
+    }
+    .publication-marker:focus-visible { outline: 2px solid #fff; border-radius: 50%; }
+    .maplibregl-popup-content { color: #1e2029; font-size: 0.8rem; }
     .map-hover-label {
       margin-top: 14px;
       min-height: 36px;
@@ -621,8 +633,167 @@
       body { flex-direction: column; }
     }
   </style>
-</head>
-<body>
+
+<meta name="description" content="Russell J. Gray — wildlife intelligence, conservation science and geospatial analysis. Experience, research, grants and selected work.">
+<meta name="theme-color" content="#141519">
+<meta property="og:title" content="Russell J. Gray — Wildlife Intelligence &amp; Conservation">
+<meta property="og:description" content="Explore Russell J. Gray&#x27;s experience, research and work at the intersection of wildlife conservation, data and intelligence.">
+<meta property="og:type" content="profile">
+<meta property="og:url" content="https://rjgrayecology.github.io/CV/">
+<link rel="canonical" href="https://rjgrayecology.github.io/CV/">
+<noscript><style>.page{display:block!important}.top-nav{position:relative!important}.publication-filters,#map,#reset-map,.print-button,#load-dashboard{display:none!important}.main{margin-top:20px!important}</style></noscript><style>
+/* Readability, navigation and responsive refinement. */
+:root { --text:#e1e4ec; --text-dim:#aeb5c7; --gold-dim:#c5a34a; }
+body { font-size:16px; line-height:1.65; }
+h1,h2,h3 { line-height:1.3; }
+a { color:var(--gold); text-underline-offset:3px; }
+a:hover { text-decoration:underline; }
+button,input,select { font:inherit; }
+button,a,input,select { -webkit-tap-highlight-color:transparent; }
+:focus-visible { outline:3px solid var(--gold); outline-offset:4px; }
+[hidden] { display:none!important; }
+.skip-link { position:fixed;left:20px;top:-100px;z-index:1000;background:var(--gold);color:#141519;padding:10px 18px;border-radius:6px; }
+.skip-link:focus { top:12px; }
+.main { min-width:0; padding-bottom:24px; }
+.page { max-width:1180px; margin-inline:auto; animation:none; }
+.card { padding:clamp(20px,2.4vw,32px); }
+.top-nav { gap:2px; }
+.nav-btn { text-decoration:none;font-size:.8rem;padding:8px 12px; }
+.nav-btn:hover { text-decoration:none; }
+.sidebar-title,.sidebar-section-label,.stat-label { font-size:.75rem; }
+.contact-list a { font-size:.85rem; }
+.sidebar-name { margin-top:4px; }
+.profile-wrap::before { animation:none; }
+.sidebar .print-button { margin-top:20px;width:100%; }
+.hero-bio,.tl-body,.cap-body,.grant-text,.pub-item { font-size:1rem;line-height:1.75; }
+.hero-bio { max-width:76ch; }
+.hero-subtitle { line-height:1.7;font-size:.85rem; }
+.tl-title { font-size:1.05rem; }
+.tl-meta { font-size:.85rem;flex-wrap:wrap; }
+.section-heading { font-size:1rem;line-height:1.5; }
+.section-heading::after { min-width:12px; }
+.stat-box { padding:16px 12px;min-width:125px; }
+.stat-num { font-size:1.7rem; }
+.action-button { display:inline-flex;justify-content:center;align-items:center;gap:8px;min-height:44px;padding:9px 15px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);color:var(--text);text-decoration:none;cursor:pointer;font-size:.9rem;font-weight:600; }
+.action-button:hover { border-color:var(--gold);color:var(--gold);text-decoration:none; }
+.action-button.primary { background:var(--gold);color:#141519;border-color:var(--gold); }
+.hero-actions { display:flex;gap:10px;flex-wrap:wrap;margin-top:26px; }
+.capability-grid,.work-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,245px),1fr));gap:24px; }
+.capability-grid h3,.work-card h3 { font-size:1.08rem;color:var(--text);margin-bottom:10px; }
+.capability-grid p,.work-card p { color:var(--text-dim);margin-bottom:14px; }
+.capability-grid a { font-size:.9rem; }
+.tools-line { margin-top:24px;padding-top:20px;border-top:1px solid var(--border);color:var(--text-dim); }
+.supporting { color:var(--text-dim);margin-top:10px; }
+.work-card { border:1px solid var(--border);padding:22px;border-radius:10px;background:var(--surface2); }
+.work-card a { display:block;font-size:.9rem;margin-top:8px; }
+.eyebrow { color:var(--gold);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:12px; }
+.ops-rname { font-size:.95rem; }
+.ops-rdesc { font-size:.9rem; }
+.cap-title { font-size:1rem; }
+#portfolio [style*="grid-template-columns"] { grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr))!important; }
+#portfolio .tag { font-size:.8rem; }
+#portfolio .tag-list { gap:8px; }
+.pub-scroll { max-height:none;overflow:visible;padding:0; }
+.pub-list { padding:0;list-style:none; }
+.pub-item { scroll-margin-top:100px;border:1px solid var(--border);border-left:3px solid var(--border);border-radius:0 8px 8px 0; }
+.pub-item.highlight { border-color:var(--gold);box-shadow:0 0 0 2px var(--gold-glow); }
+.pub-num { margin-bottom:5px; }
+.pub-type { display:inline-block;font-size:.7rem;border:1px solid var(--border);border-radius:4px;padding:1px 7px;margin-bottom:8px;letter-spacing:.04em;color:var(--gold); }
+.publication-filters { display:flex;gap:14px;flex-wrap:wrap;align-items:end;margin:22px 0 14px; }
+.publication-filters>div:first-child { flex:2;min-width:min(100%,220px); }
+.publication-filters>div:nth-child(2) { flex:1;min-width:min(100%,190px); }
+.publication-filters label { display:block;color:var(--text);font-size:.85rem;margin-bottom:5px; }
+.publication-filters input,.publication-filters select { width:100%;min-height:44px;background:var(--bg);border:1px solid #747c90;color:var(--text);padding:9px 12px;border-radius:6px; }
+#publication-results { font-size:.9rem;color:var(--text-dim);margin-bottom:18px; }
+#map { height:480px;margin-top:16px; }
+.publication-marker { width:28px;height:28px;padding:8px; }
+.publication-marker.area::before { background:#141519;border-color:var(--gold);box-shadow:0 0 6px var(--gold-glow); }
+.publication-marker.group { width:32px;height:32px;padding:0;border:2px solid var(--gold);border-radius:50%;background:#252830;color:#fff;font-weight:700;font-size:12px; }
+.publication-marker.group::before { display:none; }
+.map-paper-picker { margin-top:16px; }
+.map-paper-picker label { display:block;font-size:.9rem;margin-bottom:6px; }
+.map-paper-picker select { width:100%;min-height:44px;padding:8px;background:var(--bg);color:var(--text);border:1px solid #747c90;border-radius:6px; }
+.pub-geography { margin-top:12px;padding-top:10px;border-top:1px solid var(--border);font-size:.85rem; }
+.pub-geography summary,.non-site-studies summary { cursor:pointer;color:var(--gold); }
+.pub-geography p { margin-top:8px; }
+.coordinate-note { color:var(--text-dim);font-size:.8rem; }
+.non-site-studies { margin-top:18px; }
+.non-site-studies ul { margin:14px 0 0 20px; }
+.non-site-studies li { margin-bottom:12px; }
+.non-site-studies p { color:var(--text-dim);font-size:.85rem; }
+.map-paper-choice { display:block;text-align:left;width:100%;padding:8px 4px;background:transparent;border:0;border-bottom:1px solid #747c90;color:#fff;cursor:pointer;font:inherit; }
+.maplibregl-popup-content { background:#252830;color:#e1e4ec;line-height:1.6;padding:16px; }
+.maplibregl-popup-close-button { color:#fff;width:28px;height:28px; }
+.maplibregl-popup-anchor-bottom .maplibregl-popup-tip { border-top-color:#252830; }
+.maplibregl-ctrl-attrib { font-size:11px;color:#222; }
+.maplibregl-ctrl-attrib a { color:#222; }
+.site-footer { max-width:1180px;margin:28px auto 0;padding-top:16px;border-top:1px solid var(--border);font-size:.8rem;color:var(--text-dim);display:flex;gap:12px;justify-content:space-between;flex-wrap:wrap; }
+.noscript-note { padding:16px; }
+@media(max-width:1000px) and (min-width:701px) {
+  :root { --sidebar-w:220px; }
+  .sidebar { padding:24px 16px; }
+  .nav-btn { padding:8px;font-size:.75rem; }
+}
+@media(max-width:700px) {
+  .sidebar { display:grid;grid-template-columns:64px minmax(0,1fr);gap:6px 16px;padding:20px;border-radius:0;align-items:center;justify-items:start;overflow:visible; }
+  .profile-wrap { grid-row:1/3;margin:0; }
+  .profile-initials { width:64px;height:64px;font-size:1.5rem; }
+  .sidebar-name { text-align:left;align-self:end;margin:0; }
+  .sidebar-title { text-align:left;align-self:start;margin:0; }
+  .sidebar-divider,.sidebar-section-label { display:none; }
+  .sidebar>.contact-list { grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px 18px;margin:12px 0 0; }
+  .contact-list li { margin:0; }
+  .contact-list a { font-size:.8rem; }
+  .contact-list .icon-circle { width:26px;height:26px; }
+  .sidebar .print-button { display:none; }
+  .top-nav { position:sticky;top:0;left:0;right:0;border-radius:0;width:100%;height:auto;min-height:56px;padding:8px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;overflow:visible; }
+  .nav-btn { min-height:40px;justify-content:center;padding:8px 4px;font-size:.72rem; }
+  .main { margin:0;padding:16px; }
+  .hero-card { padding:24px 20px; }
+  .hero-name { font-size:1.85rem;overflow-wrap:anywhere; }
+  .hero-subtitle { letter-spacing:.07em;font-size:.75rem; }
+  .hero-actions { gap:8px; }
+  .hero-actions .action-button { flex:1 1 140px; }
+  .stat-row { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px; }
+  .stat-box { min-width:0; }
+  .card { padding:20px 16px; }
+  .section-heading { font-size:.9rem;letter-spacing:.05em; }
+  .tl-meta { display:block; }
+  .grant-item { flex-wrap:wrap; }
+  .pub-item { padding:16px 12px;overflow-wrap:anywhere; }
+  .publication-filters { display:grid;grid-template-columns:minmax(0,1fr); }
+  #map { height:380px; }
+  .site-footer { display:block; }
+  .site-footer a { display:block;margin-top:8px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  html { scroll-behavior:auto; }
+  *,*::before,*::after { animation:none!important;transition:none!important; }
+}
+@media print {
+  @page { margin:16mm; }
+  * { color:#111!important;background:transparent!important;text-shadow:none!important; }
+  body { display:block;background:#fff!important;color:#111!important;font-family:Arial,sans-serif;font-size:10pt;line-height:1.5; }
+  .sidebar,.top-nav,.skip-link,.hero-actions,.print-button,.publication-filters,#map,#reset-map,.map-hover-label,#load-dashboard,iframe,.site-footer,.noscript-note { display:none!important; }
+  .main { margin:0;padding:0; }
+  .page { display:block!important;animation:none;max-width:none; }
+  .card,.hero-card,.work-card,.pub-item,.grant-item,.cap-card,.ops-region,.stat-box { background:#fff!important;border:0!important;box-shadow:none!important;color:#111!important;padding:0;margin-bottom:12pt; }
+  .hero-card::before,.section-heading::after { display:none; }
+  .hero-name,.section-heading,.tl-title,.cap-title,.ops-rname,.stat-num,.hero-subtitle { color:#111!important; }
+  p,li,span,.tl-body,.tl-meta,.pub-item,.grant-text,.hero-bio,.ops-rdesc,.cap-body,.stat-label { color:#222!important; }
+  a { color:#111!important;text-decoration:underline; }
+  .pub-scroll { overflow:visible;max-height:none; }
+  .pub-item[hidden] { display:block!important; }
+  .publication-marker,.map-paper-picker,.pub-geography,.non-site-studies,#publication-results,#publication-empty { display:none!important; }
+  .tl-item,.pub-item,.grant-item,.work-card { break-inside:avoid; }
+  h1,h2,h3 { break-after:avoid; }
+  #publications,#grants,#portfolio { break-before:page; }
+  .capability-grid,.work-grid { display:block; }
+  #dashboard { display:none!important; }
+  .stat-row { display:flex;gap:24px; }
+}
+</style></head>
+<body><a class="skip-link" href="#main-content">Skip to content</a><noscript><p class="noscript-note">Interactive maps, filters and the embedded dashboard need JavaScript. All CV sections and publication links remain available below.</p></noscript>
 
 <!-- ── Sidebar ─────────────────────────────────────── -->
 <aside class="sidebar">
@@ -636,187 +807,126 @@
   <div class="sidebar-section-label">Contact</div>
   <ul class="contact-list">
     <li>
-      <a href="https://www.linkedin.com/in/rjgrayecology/" target="_blank">
-        <span class="icon-circle"><i class="fab fa-linkedin-in"></i></span>
+      <a href="https://www.linkedin.com/in/rjgrayecology/" target="_blank" rel="noopener">
+        <span class="icon-circle"><i class="fab fa-linkedin-in" aria-hidden="true"></i></span>
         rjgrayecology
       </a>
     </li>
     <li>
-      <a href="https://www.researchgate.net/profile/Russell_Gray3" target="_blank">
-        <span class="icon-circle"><i class="fab fa-researchgate"></i></span>
+      <a href="https://www.researchgate.net/profile/Russell_Gray3" target="_blank" rel="noopener">
+        <span class="icon-circle"><i class="fab fa-researchgate" aria-hidden="true"></i></span>
         ResearchGate
       </a>
     </li>
-  </ul>
+  
+<li><a href="https://scholar.google.com/citations?user=RsCgfnwAAAAJ&amp;hl=en" target="_blank" rel="noopener"><span class="icon-circle" aria-hidden="true">↗</span>Google Scholar</a></li>
+<li><a href="https://github.com/RJGrayEcology" target="_blank" rel="noopener"><span class="icon-circle" aria-hidden="true">⌘</span>GitHub</a></li></ul>
 
-  <div class="sidebar-divider"></div>
-  <div class="sidebar-section-label">Education</div>
-  <ul class="contact-list" style="margin-bottom:0">
-    <li style="margin-bottom:12px">
-      <div style="font-size:0.78rem;color:var(--text);font-weight:600">BSc Geospatial Technologies</div>
-      <div style="font-size:0.7rem;color:var(--text-dim)">Unity Environmental University</div>
-    </li>
-    <li style="margin-bottom:12px">
-      <div style="font-size:0.78rem;color:var(--text);font-weight:600">Ecology Track</div>
-      <div style="font-size:0.7rem;color:var(--text-dim)">University of Belize</div>
-    </li>
-    <li>
-      <div style="font-size:0.78rem;color:var(--text);font-weight:600">A.A. General Biology</div>
-      <div style="font-size:0.7rem;color:var(--text-dim)">Eastern Florida State University</div>
-    </li>
-  </ul>
-</aside>
+  
+  
+  
+<button class="action-button print-button" type="button">Print / save PDF</button></aside>
 
 <!-- ── Top Nav (Career Matches removed) ─────────────── -->
-<nav class="top-nav">
-  <button class="nav-btn active" onclick="showPage('about', this)"><i class="fas fa-user"></i>About</button>
-  <button class="nav-btn" onclick="showPage('resume', this)"><i class="fas fa-briefcase"></i>Resume</button>
-  <button class="nav-btn" onclick="showPage('publications', this); initMap();"><i class="fas fa-book-open"></i>Publications</button>
-  <button class="nav-btn" onclick="showPage('grants', this)"><i class="fas fa-hand-holding-dollar"></i>Grants</button>
-  <button class="nav-btn" onclick="showPage('portfolio', this)"><i class="fas fa-layer-group"></i>Portfolio</button>
-  <button class="nav-btn" onclick="showPage('dashboard', this)"><i class="fas fa-chart-line"></i>Dashboard</button>
+<nav class="top-nav" aria-label="CV sections">
+  <a class="nav-btn active" href="#about" data-page="about" aria-controls="about" aria-current="page"><i class="fas fa-user" aria-hidden="true"></i>About</a>
+  <a class="nav-btn" href="#resume" data-page="resume" aria-controls="resume"><i class="fas fa-briefcase" aria-hidden="true"></i>Resume</a>
+  <a class="nav-btn" href="#publications" data-page="publications" aria-controls="publications"><i class="fas fa-book-open" aria-hidden="true"></i>Publications</a>
+  <a class="nav-btn" href="#grants" data-page="grants" aria-controls="grants"><i class="fas fa-hand-holding-dollar" aria-hidden="true"></i>Grants</a>
+  <a class="nav-btn" href="#portfolio" data-page="portfolio" aria-controls="portfolio"><i class="fas fa-layer-group" aria-hidden="true"></i>Portfolio</a>
+  <a class="nav-btn" href="#dashboard" data-page="dashboard" aria-controls="dashboard"><i class="fas fa-chart-line" aria-hidden="true"></i>Dashboard</a>
 </nav>
 
 <!-- ── Main ────────────────────────────────────────── -->
-<main class="main">
+<main class="main" id="main-content" tabindex="-1">
 
   <!-- ABOUT ─────────────────────────────────────── -->
-  <section id="about" class="page active">
+  <section id="about" class="page active" aria-labelledby="about-heading">
     <div class="hero-card">
-      <div class="hero-name">Russell J. Gray</div>
+      <h1 class="hero-name" id="about-heading">Russell J. Gray</h1>
       <div class="hero-subtitle">Wildlife Intelligence Expert &amp; Conservation Strategist</div>
-      <p class="hero-bio">
-        I am currently Head of Data for the Global Monitoring System under <strong style="color:var(--text)">ECOSOLVE / GI-TOC</strong>, 
-        coordinating expert analysts and their national, regional, and international law enforcement 
-        partners to detect and disrupt illegal wildlife trade networks. My work spans field ecology, machine learning, 
-        geospatial intelligence, OSINT, grant management, and AI-powered conservation tools.
-      </p>
+      <p class="hero-bio">I lead data and analyst coordination for the Global Monitoring System at <strong>ECOSOLVE / GI-TOC</strong>, supporting efforts to detect and disrupt illegal wildlife trade. My work connects conservation science, geospatial analysis, software development and intelligence to support research and enforcement decisions. I am also the developer of <strong>gmstools</strong>, a suite of applications and tools to scope, detect, analyze, and investigate online illegal wildlife trade, currently used by law enforcement and civil society organisations (CSOs) in Latin America, Canada, Europe, Asia, and Africa.</p>
       <div class="stat-row">
-        <div class="stat-box">
-          <div class="stat-num">39+</div>
-          <div class="stat-label">Publications</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-num">9+</div>
-          <div class="stat-label">Grants Awarded</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-num">Global</div>
-          <div class="stat-label">Team Scope</div>
-        </div>
+        <div class="stat-box"><div class="stat-num" id="output-count">40</div><div class="stat-label">Research &amp; reports</div></div>
+        <div class="stat-box"><div class="stat-num">9</div><div class="stat-label">Selected grant awards</div></div>
+        
         <div class="stat-box">
           <div class="stat-num">$3M+</div>
           <div class="stat-label">Funds Managed</div>
         </div>
-        <div class="stat-box">
-          <div class="stat-num">13+</div>
-          <div class="stat-label">Years Field XP</div>
-        </div>
+        <div class="stat-box"><div class="stat-num">14</div><div class="stat-label">Years Field EXP</div></div>
       </div>
-    </div>
+    <div class="hero-actions"><a class="action-button primary" href="https://www.linkedin.com/in/rjgrayecology/" target="_blank" rel="noopener">Connect on LinkedIn <span aria-hidden="true">↗</span></a><a class="action-button" href="#portfolio">Explore selected work</a><button class="action-button print-button" type="button">Print / save PDF</button></div></div>
 
     <div class="card">
-      <div class="section-heading"><i class="fas fa-wrench"></i>Technical Skills</div>
+      <h2 class="section-heading"><i class="fas fa-wrench" aria-hidden="true"></i>Technical Skills</h2>
       <div class="skill-grid" id="skill-bars">
         <div class="skill-item">
           <div class="skill-label"><span>R / Statistical Analysis</span><span>95%</span></div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="95"></div></div>
+          <div class="skill-bar-bg" role="meter" aria-label="R / Statistical Analysis" aria-valuemin="0" aria-valuemax="100" aria-valuenow="95"><div class="skill-bar-fill" data-width="95" style="width:95%"></div></div>
         </div>
         <div class="skill-item">
           <div class="skill-label"><span>GIS / Remote Sensing</span><span>90%</span></div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="90"></div></div>
+          <div class="skill-bar-bg" role="meter" aria-label="GIS / Remote Sensing" aria-valuemin="0" aria-valuemax="100" aria-valuenow="90"><div class="skill-bar-fill" data-width="90" style="width:90%"></div></div>
         </div>
         <div class="skill-item">
           <div class="skill-label"><span>Grant Writing &amp; Fundraising</span><span>90%</span></div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="90"></div></div>
+          <div class="skill-bar-bg" role="meter" aria-label="Grant Writing &amp;amp; Fundraising" aria-valuemin="0" aria-valuemax="100" aria-valuenow="90"><div class="skill-bar-fill" data-width="90" style="width:90%"></div></div>
         </div>
         <div class="skill-item">
           <div class="skill-label"><span>Project Management</span><span>90%</span></div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="90"></div></div>
+          <div class="skill-bar-bg" role="meter" aria-label="Project Management" aria-valuemin="0" aria-valuemax="100" aria-valuenow="90"><div class="skill-bar-fill" data-width="90" style="width:90%"></div></div>
         </div>
         <div class="skill-item">
           <div class="skill-label"><span>Machine Learning / AI</span><span>80%</span></div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="80"></div></div>
+          <div class="skill-bar-bg" role="meter" aria-label="Machine Learning / AI" aria-valuemin="0" aria-valuemax="100" aria-valuenow="80"><div class="skill-bar-fill" data-width="80" style="width:80%"></div></div>
         </div>
         <div class="skill-item">
           <div class="skill-label"><span>Web Design / App Dev</span><span>80%</span></div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="80"></div></div>
+          <div class="skill-bar-bg" role="meter" aria-label="Web Design / App Dev" aria-valuemin="0" aria-valuemax="100" aria-valuenow="80"><div class="skill-bar-fill" data-width="80" style="width:80%"></div></div>
         </div>
         <div class="skill-item">
           <div class="skill-label"><span>Ecology &amp; Field Research</span><span>100%</span></div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="100"></div></div>
+          <div class="skill-bar-bg" role="meter" aria-label="Ecology &amp;amp; Field Research" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><div class="skill-bar-fill" data-width="100" style="width:100%"></div></div>
         </div>
         <div class="skill-item">
-          <div class="skill-label"><span>OSINT</span><span>85%</span></div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="85"></div></div>
+          <div class="skill-label"><span>OSINT</span><span>100%</span></div>
+          <div class="skill-bar-bg" role="meter" aria-label="OSINT" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><div class="skill-bar-fill" data-width="100" style="width:100%"></div></div>
         </div>
         <div class="skill-item">
           <div class="skill-label"><span>Drone / Photogrammetry</span><span>80%</span></div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="80"></div></div>
+          <div class="skill-bar-bg" role="meter" aria-label="Drone / Photogrammetry" aria-valuemin="0" aria-valuemax="100" aria-valuenow="80"><div class="skill-bar-fill" data-width="80" style="width:80%"></div></div>
         </div>
         <div class="skill-item">
           <div class="skill-label"><span>Python / MATLAB / C#</span><span>55%</span></div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="55"></div></div>
+          <div class="skill-bar-bg" role="meter" aria-label="Python / MATLAB / C#" aria-valuemin="0" aria-valuemax="100" aria-valuenow="55"><div class="skill-bar-fill" data-width="55" style="width:55%"></div></div>
         </div>
       </div>
     </div>
 
-    <div class="card">
-      <div class="section-heading"><i class="fas fa-language"></i>Languages</div>
-      <div class="skill-grid">
-        <div class="skill-item">
-          <div class="skill-label"><span>English (Native)</span><span>100%</span></div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="100"></div></div>
-        </div>
-        <div class="skill-item">
-          <div class="skill-label"><span>Thai</span><span>50%</span></div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="50"></div></div>
-        </div>
-        <div class="skill-item">
-          <div class="skill-label"><span>French</span><span>30%</span></div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="30"></div></div>
-        </div>
-        <div class="skill-item">
-          <div class="skill-label"><span>Spanish</span><span>30%</span></div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="30"></div></div>
-        </div>
-        <div class="skill-item">
-          <div class="skill-label"><span>Vietnamese</span><span>25%</span></div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="25"></div></div>
-        </div>
-        <div class="skill-item">
-          <div class="skill-label"><span>Malay</span><span>15%</span></div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" data-width="15"></div></div>
-        </div>
-      </div>
-    </div>
+    <div class="card"><h2 class="section-heading">Languages</h2><div class="skill-grid"><div class="skill-item"><div class="skill-label"><span>English (Native)</span><span>100%</span></div><div class="skill-bar-bg" role="meter" aria-label="English (Native)" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><div class="skill-bar-fill" data-width="100" style="width:100%"></div></div></div><div class="skill-item"><div class="skill-label"><span>Thai</span><span>35%</span></div><div class="skill-bar-bg" role="meter" aria-label="Thai" aria-valuemin="0" aria-valuemax="100" aria-valuenow="35"><div class="skill-bar-fill" data-width="35" style="width:35%"></div></div></div><div class="skill-item"><div class="skill-label"><span>French</span><span>20%</span></div><div class="skill-bar-bg" role="meter" aria-label="French" aria-valuemin="0" aria-valuemax="100" aria-valuenow="20"><div class="skill-bar-fill" data-width="20" style="width:20%"></div></div></div><div class="skill-item"><div class="skill-label"><span>Spanish</span><span>20%</span></div><div class="skill-bar-bg" role="meter" aria-label="Spanish" aria-valuemin="0" aria-valuemax="100" aria-valuenow="20"><div class="skill-bar-fill" data-width="20" style="width:20%"></div></div></div><div class="skill-item"><div class="skill-label"><span>Vietnamese</span><span>20%</span></div><div class="skill-bar-bg" role="meter" aria-label="Vietnamese" aria-valuemin="0" aria-valuemax="100" aria-valuenow="20"><div class="skill-bar-fill" data-width="20" style="width:20%"></div></div></div><div class="skill-item"><div class="skill-label"><span>Malay</span><span>10%</span></div><div class="skill-bar-bg" role="meter" aria-label="Malay" aria-valuemin="0" aria-valuemax="100" aria-valuenow="10"><div class="skill-bar-fill" data-width="10" style="width:10%"></div></div></div></div></div>
   </section>
 
   <!-- DASHBOARD ─────────────────────────────────── -->
-  <section id="dashboard" class="page">
+  <section id="dashboard" class="page" aria-labelledby="dashboard-heading">
     <div class="card">
-      <div class="section-heading"><i class="fas fa-chart-line"></i>Environmental Intelligence Dashboard</div>
-      <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:14px">
+      <h2 class="section-heading" id="dashboard-heading"><i class="fas fa-chart-line" aria-hidden="true"></i>Environmental Intelligence Dashboard</h2><p class="supporting">Live data services may take time to load. Use the full-window link for more space.</p>
+      <p style="font-size:0.95rem;color:var(--text-dim);margin-bottom:14px">
         Open directly:
-        <a href="https://rjgray-ecosolve.github.io/env-intel-dashboard/" target="_blank" style="color:var(--gold)">rjgray-ecosolve.github.io/env-intel-dashboard</a>.
+        <a href="https://rjgray-ecosolve.github.io/env-intel-dashboard/" target="_blank" style="color:var(--gold)" rel="noopener">rjgray-ecosolve.github.io/env-intel-dashboard</a>.
       </p>
-      <iframe
-        src="https://rjgray-ecosolve.github.io/env-intel-dashboard/"
-        title="Environmental Intelligence Dashboard"
-        style="width:100%;height:920px;border:1px solid var(--border);border-radius:10px;background:var(--surface2)"
-        loading="lazy"
-      ></iframe>
+      <button class="action-button" id="load-dashboard" type="button">Load live dashboard</button><iframe title="Environmental Intelligence Dashboard" style="width:100%;height:920px;border:1px solid var(--border);border-radius:10px;background:var(--surface2)" loading="lazy" data-src="https://rjgray-ecosolve.github.io/env-intel-dashboard/" height="920"></iframe>
     </div>
   </section>
 
   <!-- RESUME ───────────────────────────────────── -->
-  <section id="resume" class="page">
+  <section id="resume" class="page" aria-labelledby="resume-heading">
     <div class="card">
-      <div class="section-heading"><i class="fas fa-briefcase"></i>Work Experience</div>
+      <h2 class="section-heading" id="resume-heading"><i class="fas fa-briefcase" aria-hidden="true"></i>Work Experience</h2>
       <div class="timeline">
         <div class="tl-item">
-          <div class="tl-title">Head of Data – ECOSOLVE / GI-TOC</div>
-          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2024 – Present &nbsp;|&nbsp; <i class="fas fa-globe"></i> Global</div>
+          <h3 class="tl-title">Head of Data – ECOSOLVE / GI-TOC</h3>
+          <div class="tl-meta"><i class="fas fa-calendar-alt" aria-hidden="true"></i> 2024 – Present &nbsp;|&nbsp; <i class="fas fa-globe" aria-hidden="true"></i> Global</div>
           <div class="tl-body">
             <ul style="padding-left:16px">
               <li>Coordinates teams of analysts from South Africa, Nigeria, Cameroon, Thailand, Indonesia, South Asia, MENA region, Brazil, Colombia, Mexico, and Czechia</li>
@@ -826,8 +936,8 @@
           </div>
         </div>
         <div class="tl-item">
-          <div class="tl-title">Science Advisor – Save Vietnam's Wildlife</div>
-          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2021 – 2024 &nbsp;|&nbsp; <i class="fas fa-map-marker-alt"></i> Vietnam</div>
+          <h3 class="tl-title">Science Advisor – Save Vietnam's Wildlife</h3>
+          <div class="tl-meta"><i class="fas fa-calendar-alt" aria-hidden="true"></i> 2021 – 2024 &nbsp;|&nbsp; <i class="fas fa-map-marker-alt" aria-hidden="true"></i> Vietnam</div>
           <div class="tl-body">
             <ul style="padding-left:16px">
               <li>Led research on pangolin, small carnivore, and Asian elephant conservation; captive welfare and behavioral research</li>
@@ -838,8 +948,8 @@
           </div>
         </div>
         <div class="tl-item">
-          <div class="tl-title">Wildlife Conservation Consultant – R.J. Gray Ecology</div>
-          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2018 – 2024 &nbsp;|&nbsp; <i class="fas fa-globe"></i> International</div>
+          <h3 class="tl-title">Wildlife Conservation Consultant – R.J. Gray Ecology</h3>
+          <div class="tl-meta"><i class="fas fa-calendar-alt" aria-hidden="true"></i> 2018 – 2024 &nbsp;|&nbsp; <i class="fas fa-globe" aria-hidden="true"></i> International</div>
           <div class="tl-body">
             <ul style="padding-left:16px">
               <li>Contract consulting in wildlife conservation planning, data analysis, and software engineering</li>
@@ -850,8 +960,8 @@
           </div>
         </div>
         <div class="tl-item">
-          <div class="tl-title">Wildlife Biologist – CrocDocs, University of Florida</div>
-          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2017 – 2018 &nbsp;|&nbsp; <i class="fas fa-map-marker-alt"></i> Florida, USA</div>
+          <h3 class="tl-title">Wildlife Biologist – CrocDocs, University of Florida</h3>
+          <div class="tl-meta"><i class="fas fa-calendar-alt" aria-hidden="true"></i> 2017 – 2018 &nbsp;|&nbsp; <i class="fas fa-map-marker-alt" aria-hidden="true"></i> Florida, USA</div>
           <div class="tl-body">
             <ul style="padding-left:16px">
               <li>Airboat surveys, captures, morphometric and blood chemistry assessments of wild American crocodiles and alligators</li>
@@ -861,8 +971,8 @@
           </div>
         </div>
         <div class="tl-item">
-          <div class="tl-title">Project Lead – Toucan Ridge Ecology &amp; Education Society</div>
-          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2015 – 2016 &nbsp;|&nbsp; <i class="fas fa-map-marker-alt"></i> Belize</div>
+          <h3 class="tl-title">Project Lead – Toucan Ridge Ecology &amp; Education Society</h3>
+          <div class="tl-meta"><i class="fas fa-calendar-alt" aria-hidden="true"></i> 2015 – 2016 &nbsp;|&nbsp; <i class="fas fa-map-marker-alt" aria-hidden="true"></i> Belize</div>
           <div class="tl-body">
             <ul style="padding-left:16px">
               <li>Established reptile and amphibian monitoring comparing agricultural, reclaimed, and natural forest habitat</li>
@@ -871,8 +981,8 @@
           </div>
         </div>
         <div class="tl-item">
-          <div class="tl-title">Assistant Researcher – Khorat Museum</div>
-          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2014 – 2015 &nbsp;|&nbsp; <i class="fas fa-map-marker-alt"></i> Thailand</div>
+          <h3 class="tl-title">Assistant Researcher – Khorat Museum</h3>
+          <div class="tl-meta"><i class="fas fa-calendar-alt" aria-hidden="true"></i> 2014 – 2015 &nbsp;|&nbsp; <i class="fas fa-map-marker-alt" aria-hidden="true"></i> Thailand</div>
           <div class="tl-body">
             <ul style="padding-left:16px">
               <li>Database management for fossil wood specimens; biodiversity surveys at Bantak Petrified Forest Park</li>
@@ -881,8 +991,8 @@
           </div>
         </div>
         <div class="tl-item">
-          <div class="tl-title">Field Technician – Sakaerat Environmental Research Station</div>
-          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2013 – 2014 &nbsp;|&nbsp; <i class="fas fa-map-marker-alt"></i> Nakhon Ratchasima, Thailand</div>
+          <h3 class="tl-title">Field Technician – Sakaerat Environmental Research Station</h3>
+          <div class="tl-meta"><i class="fas fa-calendar-alt" aria-hidden="true"></i> 2013 – 2014 &nbsp;|&nbsp; <i class="fas fa-map-marker-alt" aria-hidden="true"></i> Nakhon Ratchasima, Thailand</div>
           <div class="tl-body">
             <ul style="padding-left:16px">
               <li>King cobra and green pit-viper radio-telemetry tracking; snake community ecology research</li>
@@ -894,21 +1004,21 @@
     </div>
 
     <div class="card">
-      <div class="section-heading"><i class="fas fa-graduation-cap"></i>Education</div>
+      <h2 class="section-heading"><i class="fas fa-graduation-cap" aria-hidden="true"></i>Education</h2>
       <div class="timeline">
         <div class="tl-item">
-          <div class="tl-title">BSc. Environmental Geospatial Technologies</div>
-          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2021 &nbsp;|&nbsp; Unity Environmental University, Maine</div>
+          <h3 class="tl-title">BSc. Environmental Geospatial Technologies</h3>
+          <div class="tl-meta"><i class="fas fa-calendar-alt" aria-hidden="true"></i> 2021 &nbsp;|&nbsp; Unity Environmental University, Maine</div>
           <div class="tl-body">Thesis: Species Distribution Modelling of <em>Porthidium yucatanicum</em> Reveals Falsified Museum Records</div>
         </div>
         <div class="tl-item">
-          <div class="tl-title">Ecology &amp; Biology</div>
-          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2014 – 2016 &nbsp;|&nbsp; University of Belize</div>
+          <h3 class="tl-title">Ecology &amp; Biology</h3>
+          <div class="tl-meta"><i class="fas fa-calendar-alt" aria-hidden="true"></i> 2014 – 2016 &nbsp;|&nbsp; University of Belize</div>
           <div class="tl-body">Ecology and Evolution track</div>
         </div>
         <div class="tl-item">
-          <div class="tl-title">A.A. General Biology</div>
-          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2009 – 2011 &nbsp;|&nbsp; Eastern Florida State University</div>
+          <h3 class="tl-title">A.A. General Biology</h3>
+          <div class="tl-meta"><i class="fas fa-calendar-alt" aria-hidden="true"></i> 2009 – 2011 &nbsp;|&nbsp; Eastern Florida State University</div>
           <div class="tl-body">Biology and Chemistry track</div>
         </div>
       </div>
@@ -916,75 +1026,75 @@
   </section>
 
   <!-- PUBLICATIONS ─────────────────────────────── -->
-  <section id="publications" class="page">
+  <section id="publications" class="page" aria-labelledby="publications-heading">
     <div class="card">
-      <div class="section-heading"><i class="fas fa-globe-asia"></i>Project Map</div>
-      <p style="font-size:0.8rem;color:var(--text-dim);margin-bottom:16px">
-        Geographic distribution of fieldwork, collaborations, and research publications.
-        Click a marker to jump to the matching publication below.
-      </p>
-      <div id="map"></div>
-      <div class="map-hover-label" id="map-label">Click a marker to jump to a publication.</div>
-    </div>
+      <h2 class="section-heading"><i class="fas fa-globe-asia" aria-hidden="true"></i>Project Map</h2>
+      <p style="font-size:0.95rem;color:var(--text-dim);margin-bottom:16px">Locations checked against the papers and author or publisher records. Solid markers use published coordinates; outlined markers represent approximate areas or country-wide studies. Numbered markers group nearby papers. Multi-site papers can appear in several places. Global and broad regional syntheses are listed without arbitrary site pins.</p>
+      <button class="action-button" id="reset-map" type="button">Show all research locations</button><div class="map-paper-picker"><label for="map-paper-select">Locate a paper</label><select id="map-paper-select"><option value="">Choose a paper…</option><option value="1">#1 · Prioritising natural heritage: evaluating distribution, threats, and conservation needs of species recovery targets in Vietnam.</option><option value="2">#2 · Mapping multiple wild pig species&#x27; population dynamics in Southeast Asia during the African swine fever outbreak (2018–2024).</option><option value="3">#3 · Development of a global thermal detection index to prioritize primate research with thermal drones.</option><option value="4">#4 · Camera trapping in Southern Vietnam: unveiling relative abundance, activity patterns, and conservation challenges of globally threatened pangolins and small carnivores.</option><option value="5">#5 · The impacts of commercial civet farming in central Vietnam.</option><option value="6">#6 · Feasibility assessment of commercially available UAV sensor and payload functions for crocodile population surveys.</option><option value="7">#7 · Records of Greater Hog Badger Arctonyx collaris from northern Vietnam and a discussion of its status in the country.</option><option value="8">#8 · Niche suitability and spatial distribution patterns of anurans in a unique Ecoregion mosaic of Northern Pakistan.</option><option value="9">#9 · Home ranges and activity patterns of Sunda pangolins Manis javanica in Vietnam.</option><option value="10">#10 · Unmanned aerial vehicles (UAVs) with thermal infrared (TIR) sensors are effective for monitoring and counting threatened Vietnamese primates.</option><option value="11">#11 · Southern extension of raccoon dog Nyctereutes procyonoides range in Vietnam with comments on its conservation status.</option><option value="12">#12 · Montane grassland resources drive gorilla (Gorilla gorilla) nesting behaviors in the Ebo forest, Cameroon.</option><option value="13">#13 · Living on the Edge: The Impacts of Buffer Zones on Wetland Carnivores in Vietnam.</option><option value="14">#14 · Evidence of Spotted Linsang Prionodon pardicolor post-weaning parental care.</option><option value="15">#15 · Confirmed evidence of marbled cat in Pu Mat National Park, Vietnam.</option><option value="16">#16 · Extreme-sized anurans are more prone to climate-driven extinctions.</option><option value="17">#17 · Development of a Fixed-Wing Drone System for Aerial Insect Sampling.</option><option value="20">#20 · Status, threats, and overlap of globally important pangolins and threatened small carnivores in a disturbed wetland mosaic of southern Vietnam.</option><option value="21">#21 · Macaca fascicularis. IUCN Red List of Threatened Species 2022.</option><option value="22">#22 · 101 years of biofluorescent animal studies: trends in literature, novel hypotheses, and best practices moving forward.</option><option value="23">#23 · Renal morphophysiology is not a significant correlate of observable body condition in Masked Palm Civets (Paguma larvata).</option><option value="24">#24 · The effectiveness of policies for addressing Covid-19 impacts on wildlife conservation in Vietnam.</option><option value="25">#25 · Citizen science and online data: Opportunities and challenges for snake ecology and action against snakebite.</option><option value="26">#26 · Evolutionary dynamics shape two passive defensive mechanisms in Neotropical snake radiations.</option><option value="27">#27 · First report of intraspecific variation in wing translucency for a Neotropical bat species.</option><option value="28">#28 · Male combat in the striped kukri snake Oligodon teniatus.</option><option value="29">#29 · Taxonomic status of Apostolepis tertulianobeui based on an integrative revision of A. assimilis.</option><option value="30">#30 · Between a rock and a hard place: rugged terrain features and human disturbance affect behaviour and habitat use of Sumatran elephants in Aceh.</option><option value="31">#31 · Rise in temperature causes decreased fitness and higher extinction risks in endemic frogs at high altitude forested wetlands in northern Pakistan.</option><option value="32">#32 · Identifying the variation in utilization density estimators and home ranges of elephant clans in Aceh, Sumatra, Indonesia.</option><option value="33">#33 · Sorry, we&#x27;re open: Golden open-access and inequality in non-human biological sciences.</option><option value="34">#34 · Exotic Hobos: Release, escape, and potential secondary dispersal of African red-headed agamas through the Florida railway systems.</option><option value="35">#35 · First report of reproduction in the wild for Acanthosaura cardamomensis in Thailand.</option><option value="36">#36 · Biofluorescent lateral patterning on the Mossy Bushfrog (Philautus macroscelis): the first report of biofluorescence in a rhacophorid frog.</option><option value="37">#37 · Discovery of the first male specimen of Tantilla hendersoni from a new locality in central Belize.</option><option value="38">#38 · Herpetofaunal assemblages of a lowland broadleaf forest, an overgrown orchard forest and a lime orchard in Stann Creek, Belize.</option><option value="39">#39 · Two new herpetofaunal records for Stann Creek District, Belize.</option></select></div><div id="map" role="region" aria-label="Research publication map"></div>
+      <div class="map-hover-label" id="map-label" role="status" aria-live="polite">Click a marker to jump to a publication.</div>
+    <details class="non-site-studies"><summary>Global and regional studies without a single site marker (9)</summary><ul><li><a href="#pub-2">#2 · Mapping multiple wild pig species&#x27; population dynamics in Southeast Asia during the African swine fever outbreak (2018–2024).</a><p>Southeast Asia · 11-country synthesis</p></li><li><a href="#pub-3">#3 · Development of a global thermal detection index to prioritize primate research with thermal drones.</a><p>Global · primate distributions</p></li><li><a href="#pub-16">#16 · Extreme-sized anurans are more prone to climate-driven extinctions.</a><p>Global · anuran evolution and climate</p></li><li><a href="#pub-21">#21 · Macaca fascicularis. IUCN Red List of Threatened Species 2022.</a><p>South and Southeast Asia · species-wide assessment</p></li><li><a href="#pub-22">#22 · 101 years of biofluorescent animal studies: trends in literature, novel hypotheses, and best practices moving forward.</a><p>Global · biofluorescence literature review</p></li><li><a href="#pub-25">#25 · Citizen science and online data: Opportunities and challenges for snake ecology and action against snakebite.</a><p>Global · citizen science and online snake data</p></li><li><a href="#pub-26">#26 · Evolutionary dynamics shape two passive defensive mechanisms in Neotropical snake radiations.</a><p>Neotropics · comparative snake behaviour</p></li><li><a href="#pub-29">#29 · Taxonomic status of Apostolepis tertulianobeui based on an integrative revision of A. assimilis.</a><p>Brazil · taxonomic revision and distribution modelling</p></li><li><a href="#pub-33">#33 · Sorry, we&#x27;re open: Golden open-access and inequality in non-human biological sciences.</a><p>International · scholarly publishing analysis</p></li></ul></details></div>
 
     <div class="card">
-      <div class="section-heading"><i class="fas fa-book-open"></i>Peer-Reviewed Articles</div>
-      <p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:16px">Click any title to search on Google Scholar. Full profile also available at <a href="https://scholar.google.com/citations?user=RsCgfnwAAAAJ&hl=en" target="_blank" style="color:var(--gold)">scholar.google.com</a>.</p>
+      <h2 class="section-heading" id="publications-heading">Publications & reports</h2>
+      <p style="font-size:0.95rem;color:var(--text-dim);margin-bottom:16px">Browse journal articles, preprints, reports, an assessment and a book. Most titles link to Google Scholar searches; direct source links are used where available. <a href="https://scholar.google.com/citations?user=RsCgfnwAAAAJ&amp;hl=en" target="_blank" rel="noopener">View Google Scholar profile ↗</a></p>
+<div class="publication-filters">
+<div><label for="publication-search">Search publications</label><input id="publication-search" type="search" placeholder="Title, author, subject or year" autocomplete="off"></div>
+<div><label for="publication-type">Publication type</label><select id="publication-type"><option value="all">All types</option><option value="article">Journal articles</option><option value="preprint">Preprints</option><option value="report">Reports &amp; working papers</option><option value="assessment">Assessments</option><option value="book">Books</option></select></div>
+<button class="action-button" id="clear-publication-filters" type="button">Clear filters</button>
+<button class="action-button" id="view-research-map" type="button">View research map</button>
+</div><p id="publication-results" role="status" aria-live="polite"></p><p id="publication-empty" hidden>No publications match these filters. Try another search or clear the filters.</p>
       <div class="pub-scroll">
       <ul class="pub-list">
-        <li class="pub-item" id="pub-0"><div class="pub-num">#0 · 2026</div><span class="pub-author-highlight">Gray, R. J.</span> <a class="pub-link" href="https://globalinitiative.net/analysis/wildlife-has-a-facebook-problem/" target="_blank">Wildlife has a Facebook problem: Evidence of platform-scale facilitation of criminal trade in wildlife.</a> <em>Global Initiative Against Transnational Organized Crime</em>.</li>
-        <li class="pub-item" id="pub-1"><div class="pub-num">#1 · 2025</div><span class="pub-author-highlight">Gray, R. J.</span>, Gazagne, E., Tilker, A., Van Thong, P., &amp; Bao, T. Q. <a class="pub-link" href="https://scholar.google.com/scholar?q=Prioritising+natural+heritage+evaluating+distribution+threats+conservation+needs+species+recovery+targets+Vietnam&hl=en&as_sdt=0,5" target="_blank">Prioritising natural heritage: evaluating distribution, threats, and conservation needs of species recovery targets in Vietnam.</a> <em>Biodiversity and Conservation</em>, 34(12), 4289–4308.</li>
-        <li class="pub-item"><div class="pub-num">#2 · 2025</div>Lieb, Z. E., Meijaard, E., Brodie, J. F., … <span class="pub-author-highlight">Gray, R. J.</span>, … &amp; Luskin, M. S. <a class="pub-link" href="https://scholar.google.com/scholar?q=Mapping+multiple+wild+pig+species+population+dynamics+Southeast+Asia+african+swine+fever+outbreak&hl=en&as_sdt=0,5" target="_blank">Mapping multiple wild pig species' population dynamics in Southeast Asia during the African swine fever outbreak (2018–2024).</a> <em>Conservation Letters</em>, 18(3), e13105.</li>
-        <li class="pub-item"><div class="pub-num">#3 · 2024</div>Gazagne, E., <span class="pub-author-highlight">Gray, R. J.</span>, Wich, S., Hambuckers, A., &amp; Brotcorne, F. <a class="pub-link" href="https://scholar.google.com/scholar?q=Development+global+thermal+detection+index+prioritize+primate+research+thermal+drones&hl=en&as_sdt=0,5" target="_blank">Development of a global thermal detection index to prioritize primate research with thermal drones.</a> <em>Scientific Reports</em>, 14(1), 27963.</li>
-        <li class="pub-item"><div class="pub-num">#4 · 2024</div><span class="pub-author-highlight">Gray, R. J.</span>, Nguyen, T.V., Cao, L.N. et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Camera+trapping+Southern+Vietnam+relative+abundance+activity+patterns+pangolins+small+carnivores&hl=en&as_sdt=0,5" target="_blank">Camera trapping in Southern Vietnam: unveiling relative abundance, activity patterns, and conservation challenges of globally threatened pangolins and small carnivores.</a> <em>European Journal of Wildlife Research</em>, 70, 50.</li>
-        <li class="pub-item"><div class="pub-num">#5 · 2024</div>Trinh, T. M., <span class="pub-author-highlight">Gray, R.</span>, Tran, T. T. H., Le, K. L., Cao, N. L., &amp; Willcox, D. <a class="pub-link" href="https://scholar.google.com/scholar?q=impacts+commercial+civet+farming+central+Vietnam+Trinh+Gray&hl=en&as_sdt=0,5" target="_blank">The impacts of commercial civet farming in central Vietnam.</a> <em>Small Carnivore Conservation</em>, 62.</li>
-        <li class="pub-item"><div class="pub-num">#6 · 2023</div><span class="pub-author-highlight">Gray, R. J.</span> &amp; Gazagne, E. <a class="pub-link" href="https://scholar.google.com/scholar?q=Feasibility+assessment+commercially+available+UAV+sensor+payload+crocodile+population+surveys&hl=en&as_sdt=0,5" target="_blank">Feasibility assessment of commercially available UAV sensor and payload functions for crocodile population surveys.</a> <em>Herpetology Notes</em>, 16.</li>
-        <li class="pub-item"><div class="pub-num">#7 · 2023</div>Cao, L., <span class="pub-author-highlight">Gray, R.</span>, Pham, T., et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Records+Greater+Hog+Badger+Arctonyx+collaris+northern+Vietnam+conservation+status&hl=en&as_sdt=0,5" target="_blank">Records of Greater Hog Badger <em>Arctonyx collaris</em> from northern Vietnam and a discussion of its status in the country.</a> <em>Small Carnivore Conservation</em>, 61.</li>
-        <li class="pub-item"><div class="pub-num">#8 · 2023</div>Rais, M., Nawaz, M. A., <span class="pub-author-highlight">Gray, R. J.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Niche+suitability+spatial+distribution+patterns+anurans+Ecoregion+mosaic+Northern+Pakistan&hl=en&as_sdt=0,5" target="_blank">Niche suitability and spatial distribution patterns of anurans in a unique Ecoregion mosaic of Northern Pakistan.</a> <em>PLoS One</em>, 18(6), e0285867.</li>
-        <li class="pub-item"><div class="pub-num">#9 · 2023</div><span class="pub-author-highlight">Gray, R. J.</span>, Van Le, D., Nguyen, H. T. T., et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Home+ranges+activity+patterns+Sunda+pangolins+Manis+javanica+Vietnam&hl=en&as_sdt=0,5" target="_blank">Home ranges and activity patterns of Sunda pangolins <em>Manis javanica</em> in Vietnam.</a> <em>Journal of Asia-Pacific Biodiversity</em>.</li>
-        <li class="pub-item"><div class="pub-num">#10 · 2023</div>Gazagne, E., <span class="pub-author-highlight">Gray, R. J.</span>, Ratajszczak, R., et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=UAVs+thermal+infrared+sensors+effective+monitoring+counting+threatened+Vietnamese+primates&hl=en&as_sdt=0,5" target="_blank">Unmanned aerial vehicles (UAVs) with thermal infrared (TIR) sensors are effective for monitoring and counting threatened Vietnamese primates.</a> <em>Primates</em>, 1–7.</li>
-        <li class="pub-item"><div class="pub-num">#11 · 2023</div>Van Pham, T., Trinh, M. T., <span class="pub-author-highlight">Gray, R. J.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Southern+extension+raccoon+dog+Nyctereutes+procyonoides+range+Vietnam+conservation+status&hl=en&as_sdt=0,5" target="_blank">Southern extension of raccoon dog <em>Nyctereutes procyonoides</em> range in Vietnam with comments on its conservation status.</a> <em>European Journal of Wildlife Research</em>, 69(2), 22.</li>
-        <li class="pub-item"><div class="pub-num">#12 · 2023</div>Mfossa, D. M., Gazagne, E., <span class="pub-author-highlight">Gray, R. J.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Montane+grassland+resources+gorilla+nesting+behaviors+Ebo+forest+Cameroon&hl=en&as_sdt=0,5" target="_blank">Montane grassland resources drive gorilla (<em>Gorilla gorilla</em>) nesting behaviors in the Ebo forest, Cameroon.</a> <em>European Journal of Wildlife Research</em>, 69(2), 31.</li>
-        <li class="pub-item"><div class="pub-num">#13 · 2023</div>Nguyen, H. T., Willcox, D., <span class="pub-author-highlight">Gray, R.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Living+Edge+Impacts+Buffer+Zones+Wetland+Carnivores+Vietnam&hl=en&as_sdt=0,5" target="_blank">Living on the Edge: The Impacts of Buffer Zones on Wetland Carnivores in Vietnam.</a> (Preprint)</li>
-        <li class="pub-item"><div class="pub-num">#14 · 2022</div><span class="pub-author-highlight">Gray, R.</span>, Van Pham, T., Lo, B. T., et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Evidence+Spotted+Linsang+Prionodon+pardicolor+post-weaning+parental+care&hl=en&as_sdt=0,5" target="_blank">Evidence of Spotted Linsang <em>Prionodon pardicolor</em> post-weaning parental care.</a> <em>Small Carnivore Conservation</em>, 60.</li>
-        <li class="pub-item"><div class="pub-num">#15 · 2022</div>Cao, L. N., <span class="pub-author-highlight">Gray, R. J.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Confirmed+evidence+marbled+cat+Pu+Mat+National+Park+Vietnam&hl=en&as_sdt=0,5" target="_blank">Confirmed evidence of marbled cat in Pu Mat National Park, Vietnam.</a> <em>Cat News</em>, 75, 25–28.</li>
-        <li class="pub-item"><div class="pub-num">#16 · 2022</div>Feijó, A., Karlsson, C. M., <span class="pub-author-highlight">Gray, R.</span>, Yang, Q., &amp; Hughes, A. C. <a class="pub-link" href="https://scholar.google.com/scholar?q=Extreme-sized+anurans+more+prone+climate-driven+extinctions&hl=en&as_sdt=0,5" target="_blank">Extreme-sized anurans are more prone to climate-driven extinctions.</a> <em>Climate Change Ecology</em>, 100062.</li>
-        <li class="pub-item"><div class="pub-num">#17 · 2022</div>Mulero-Pázmány, M., Martínez-de Dios, J. R., Popa-Lisseanu, A. G., <span class="pub-author-highlight">Gray, R. J.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Development+Fixed-Wing+Drone+System+Aerial+Insect+Sampling&hl=en&as_sdt=0,5" target="_blank">Development of a Fixed-Wing Drone System for Aerial Insect Sampling.</a> <em>Drones</em>, 6(8), 189.</li>
-        <li class="pub-item"><div class="pub-num">#18 · 2022</div>Thi, M. T., <span class="pub-author-highlight">Gray, R.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Commercial+civet+farming+practices+conservation+impacts+wild+civet+populations+central+Vietnam&hl=en&as_sdt=0,5" target="_blank">Commercial civet farming practices and conservation impacts on wild civet populations in central Vietnam.</a> (Pre-print in review)</li>
-        <li class="pub-item"><div class="pub-num">#19 · 2022</div><span class="pub-author-highlight">Gray, R. J.</span> <a class="pub-link" href="https://scholar.google.com/scholar?q=Settling+score+60-year+literature+debate+Porthidium+yucatanicum+distribution&hl=en&as_sdt=0,5" target="_blank">Settling the score: notes on the 60-year literature debate of <em>Porthidium yucatanicum</em> distribution.</a> <em>Herpetology Notes</em>, 15, 387–389.</li>
-        <li class="pub-item"><div class="pub-num">#20 · 2022</div><span class="pub-author-highlight">Gray, R.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Status+threats+overlap+pangolins+small+carnivores+disturbed+wetland+mosaic+southern+Vietnam&hl=en&as_sdt=0,5" target="_blank">Status, threats, and overlap of globally important pangolins and threatened small carnivores in a disturbed wetland mosaic of southern Vietnam.</a> (Pre-print in review)</li>
-        <li class="pub-item"><div class="pub-num">#21 · 2022</div>Hansen, M.F., Ang, A., …<span class="pub-author-highlight">Gray, R.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Macaca+fascicularis+IUCN+Red+List+2022&hl=en&as_sdt=0,5" target="_blank"><em>Macaca fascicularis</em>. IUCN Red List of Threatened Species 2022.</a></li>
-        <li class="pub-item"><div class="pub-num">#22 · 2022</div><span class="pub-author-highlight">Gray, R.</span> &amp; Karlsson, C. <a class="pub-link" href="https://scholar.google.com/scholar?q=101+years+biofluorescent+animal+studies+trends+literature+novel+hypotheses+best+practices&hl=en&as_sdt=0,5" target="_blank">101 years of biofluorescent animal studies: trends in literature, novel hypotheses, and best practices moving forward.</a></li>
-        <li class="pub-item"><div class="pub-num">#23 · 2022</div>Lê, N., Hoang, T., Tran, T., … &amp; <span class="pub-author-highlight">Gray, R. J.</span> <a class="pub-link" href="https://scholar.google.com/scholar?q=Renal+morphophysiology+significant+correlate+body+condition+Masked+Palm+Civets+Paguma+larvata&hl=en&as_sdt=0,5" target="_blank">Renal morphophysiology is not a significant correlate of observable body condition in Masked Palm Civets (<em>Paguma larvata</em>).</a> (Pre-print)</li>
-        <li class="pub-item"><div class="pub-num">#24 · 2021</div>Trịnh, T. M., … &amp; <span class="pub-author-highlight">Gray, R. J.</span> <a class="pub-link" href="https://scholar.google.com/scholar?q=effectiveness+policies+addressing+Covid-19+impacts+wildlife+conservation+Vietnam+CIFOR&hl=en&as_sdt=0,5" target="_blank">The effectiveness of policies for addressing Covid-19 impacts on wildlife conservation in Vietnam.</a> <em>CIFOR Working Paper</em>.</li>
-        <li class="pub-item"><div class="pub-num">#25 · 2021</div>Durso, A. M., de Castañeda, R. R., … <span class="pub-author-highlight">Gray, R. J.</span>, &amp; Bolon, I. <a class="pub-link" href="https://scholar.google.com/scholar?q=Citizen+science+online+data+opportunities+challenges+snake+ecology+snakebite+Durso&hl=en&as_sdt=0,5" target="_blank">Citizen science and online data: Opportunities and challenges for snake ecology and action against snakebite.</a> <em>Toxicon: X</em>, 100071.</li>
-        <li class="pub-item"><div class="pub-num">#26 · 2021</div>Tozetti, A. M., … <span class="pub-author-highlight">Gray, R.</span>, &amp; Entiauspe-Neto, O. M. <a class="pub-link" href="https://scholar.google.com/scholar?q=Evolutionary+dynamics+shape+two+passive+defensive+mechanisms+Neotropical+snake+radiations&hl=en&as_sdt=0,5" target="_blank">Evolutionary dynamics shape two passive defensive mechanisms in Neotropical snake radiations.</a> <em>Phyllomedusa</em>, 20(1), 3–13.</li>
-        <li class="pub-item"><div class="pub-num">#27 · 2021</div>Oliveira, H. F. M., Peters, S. L., <span class="pub-author-highlight">Gray, R. J.</span>, Novaes, R. L. M. <a class="pub-link" href="https://scholar.google.com/scholar?q=First+report+intraspecific+variation+wing+translucency+Neotropical+bat&hl=en&as_sdt=0,5" target="_blank">First report of intraspecific variation in wing translucency for a Neotropical bat species.</a> <em>Journal of Bat Research and Conservation</em>.</li>
-        <li class="pub-item"><div class="pub-num">#28 · 2021</div><span class="pub-author-highlight">Gray, R. J.</span> &amp; Dresser, T. W. <a class="pub-link" href="https://scholar.google.com/scholar?q=Male+combat+striped+kukri+snake+Oligodon+teniatus+Gray+Dresser&hl=en&as_sdt=0,5" target="_blank">Male combat in the striped kukri snake <em>Oligodon teniatus</em>.</a> <em>Herpetological Bulletin</em>, 155, 30–31.</li>
-        <li class="pub-item"><div class="pub-num">#29 · 2021</div>Entiauspe-Neto, O. M., Koch, C., <span class="pub-author-highlight">Gray, R. J.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Taxonomic+status+Apostolepis+tertulianobeui+integrative+revision+Apostolepis+assimilis&hl=en&as_sdt=0,5" target="_blank">Taxonomic status of <em>Apostolepis tertulianobeui</em> based on an integrative revision of <em>A. assimilis</em>.</a> <em>Zoologischer Anzeiger</em>, 291, 123–138.</li>
-        <li class="pub-item"><div class="pub-num">#30 · 2021</div>Wilson, G., <span class="pub-author-highlight">Gray, R. J.</span>, Radinal, R. et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Between+rock+hard+place+rugged+terrain+human+disturbance+Sumatran+elephants+Aceh&hl=en&as_sdt=0,5" target="_blank">Between a rock and a hard place: rugged terrain features and human disturbance affect behaviour and habitat use of Sumatran elephants in Aceh.</a> <em>Biodiversity and Conservation</em>.</li>
-        <li class="pub-item"><div class="pub-num">#31 · 2020</div>Saeed, M., Rais, M., <span class="pub-author-highlight">Gray, R. J.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Rise+temperature+decreased+fitness+higher+extinction+risks+endemic+frogs+high+altitude+Pakistan&hl=en&as_sdt=0,5" target="_blank">Rise in temperature causes decreased fitness and higher extinction risks in endemic frogs at high altitude forested wetlands in northern Pakistan.</a> <em>Journal of Thermal Biology</em>, 102809.</li>
-        <li class="pub-item"><div class="pub-num">#32 · 2020</div>Wilson, G., <span class="pub-author-highlight">Gray, R. J.</span>, &amp; Sofyan, H. <a class="pub-link" href="https://scholar.google.com/scholar?q=Identifying+variation+utilization+density+estimators+home+ranges+elephant+clans+Aceh+Sumatra&hl=en&as_sdt=0,5" target="_blank">Identifying the variation in utilization density estimators and home ranges of elephant clans in Aceh, Sumatra, Indonesia.</a> <em>European Journal of Wildlife Research</em>, 66(6), 1–20.</li>
-        <li class="pub-item"><div class="pub-num">#33 · 2020</div><span class="pub-author-highlight">Gray, R. J.</span> <a class="pub-link" href="https://scholar.google.com/scholar?q=Sorry+we+are+open+Golden+open-access+inequality+non-human+biological+sciences&hl=en&as_sdt=0,5" target="_blank">Sorry, we're open: Golden open-access and inequality in non-human biological sciences.</a> <em>Scientometrics</em>.</li>
-        <li class="pub-item"><div class="pub-num">#34 · 2020</div><span class="pub-author-highlight">Gray, R. J.</span> <a class="pub-link" href="https://scholar.google.com/scholar?q=Exotic+Hobos+Release+escape+secondary+dispersal+African+red-headed+agamas+Florida+railway&hl=en&as_sdt=0,5" target="_blank">Exotic Hobos: Release, escape, and potential secondary dispersal of African red-headed agamas through the Florida railway systems.</a> <em>BioRxiv</em>.</li>
-        <li class="pub-item"><div class="pub-num">#35 · 2020</div><span class="pub-author-highlight">Gray, R. J.</span> <a class="pub-link" href="https://scholar.google.com/scholar?q=First+report+reproduction+wild+Acanthosaura+cardamomensis+Thailand&hl=en&as_sdt=0,5" target="_blank">First report of reproduction in the wild for <em>Acanthosaura cardamomensis</em> in Thailand.</a> <em>Herpetology Notes</em>, 13, 185–186.</li>
-        <li class="pub-item"><div class="pub-num">#36 · 2019</div><span class="pub-author-highlight">Gray, R. J.</span> <a class="pub-link" href="https://scholar.google.com/scholar?q=Biofluorescent+lateral+patterning+Mossy+Bushfrog+Philautus+macroscelis+biofluorescence+rhacophorid&hl=en&as_sdt=0,5" target="_blank">Biofluorescent lateral patterning on the Mossy Bushfrog (<em>Philautus macroscelis</em>): the first report of biofluorescence in a rhacophorid frog.</a> <em>Herpetology Notes</em>, 12, 363–364.</li>
-        <li class="pub-item"><div class="pub-num">#37 · 2017</div>Hofmann, E. P., <span class="pub-author-highlight">Gray, R. J.</span>, Wilson, L. D., &amp; Townsend, J. H. <a class="pub-link" href="https://scholar.google.com/scholar?q=Discovery+first+male+specimen+Tantilla+hendersoni+new+locality+central+Belize&hl=en&as_sdt=0,5" target="_blank">Discovery of the first male specimen of <em>Tantilla hendersoni</em> from a new locality in central Belize.</a> <em>Herpetology Notes</em>, 10, 53–57.</li>
-        <li class="pub-item"><div class="pub-num">#38 · 2017</div><span class="pub-author-highlight">Gray, R.</span> &amp; Strine, C. T. <a class="pub-link" href="https://scholar.google.com/scholar?q=Herpetofaunal+assemblages+lowland+broadleaf+forest+overgrown+orchard+lime+orchard+Stann+Creek+Belize&hl=en&as_sdt=0,5" target="_blank">Herpetofaunal assemblages of a lowland broadleaf forest, an overgrown orchard forest and a lime orchard in Stann Creek, Belize.</a> <em>ZooKeys</em>, (707), 131.</li>
-        <li class="pub-item"><div class="pub-num">#39 · 2017</div><span class="pub-author-highlight">Gray, R. J.</span> &amp; Hofmann, E. P. <a class="pub-link" href="https://scholar.google.com/scholar?q=Two+new+herpetofaunal+records+Stann+Creek+District+Belize+Gray+Hofmann&hl=en&as_sdt=0,5" target="_blank">Two new herpetofaunal records for Stann Creek District, Belize.</a> <em>Mesoamerican Herpetology</em>.</li>
-      </ul>
+        <li class="pub-item" id="pub-0" data-type="report"><span class="pub-type">Report</span><div class="pub-num">#0 · 2026</div><span class="pub-author-highlight">Gray, R. J.</span>, &amp; Haysom, S.  <a class="pub-link" href="https://globalinitiative.net/analysis/wildlife-has-a-facebook-problem/" target="_blank" rel="noopener">Wildlife has a Facebook problem: Evidence of platform-scale facilitation of criminal trade in wildlife.</a> <em>Global Initiative Against Transnational Organized Crime</em>.</li>
+        <li class="pub-item" id="pub-1" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#1 · 2025</div><span class="pub-author-highlight">Gray, R. J.</span>, Gazagne, E., Tilker, A., Van Thong, P., &amp; Bao, T. Q. <a class="pub-link" href="https://scholar.google.com/scholar?q=Prioritising+natural+heritage+evaluating+distribution+threats+conservation+needs+species+recovery+targets+Vietnam&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Prioritising natural heritage: evaluating distribution, threats, and conservation needs of species recovery targets in Vietnam.</a> <em>Biodiversity and Conservation</em>, 34(12), 4289–4308.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Vietnam · national conservation assessment</strong></p><p>Country-wide prioritisation of Vietnamese species and protected areas; no single field site. The marker at Hue is an explicitly representative in-country reference, not a survey locality.</p><p class="coordinate-note">Vietnam — nationwide assessment (representative country marker) (16.46370, 107.59090)</p><a href="https://orbi.uliege.be/handle/2268/345168" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-2" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#2 · 2025</div>Lieb, Z. E., Meijaard, E., Brodie, J. F., … <span class="pub-author-highlight">Gray, R. J.</span>, … &amp; Luskin, M. S. <a class="pub-link" href="https://scholar.google.com/scholar?q=Mapping+multiple+wild+pig+species+population+dynamics+Southeast+Asia+african+swine+fever+outbreak&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Mapping multiple wild pig species' population dynamics in Southeast Asia during the African swine fever outbreak (2018–2024).</a> <em>Conservation Letters</em>, 18(3), e13105.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Southeast Asia · 11-country synthesis</strong></p><p>88 expert questionnaires cover sites across 11 countries. A single Borneo point did not represent the paper. No arbitrary single-site marker retained.</p><a href="https://conbio.onlinelibrary.wiley.com/doi/10.1111/conl.13105" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-3" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#3 · 2024</div>Gazagne, E., <span class="pub-author-highlight">Gray, R. J.</span>, Wich, S., Hambuckers, A., &amp; Brotcorne, F. <a class="pub-link" href="https://scholar.google.com/scholar?q=Development+global+thermal+detection+index+prioritize+primate+research+thermal+drones&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Development of a global thermal detection index to prioritize primate research with thermal drones.</a> <em>Scientific Reports</em>, 14(1), 27963.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Global · primate distributions</strong></p><p>A global detectability model covering 389 primate species, not a Singapore field study. No single-site marker.</p><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11564740/" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-4" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#4 · 2024</div><span class="pub-author-highlight">Gray, R. J.</span>, Nguyen, T.V., Cao, L.N. et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Camera+trapping+Southern+Vietnam+relative+abundance+activity+patterns+pangolins+small+carnivores&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Camera trapping in Southern Vietnam: unveiling relative abundance, activity patterns, and conservation challenges of globally threatened pangolins and small carnivores.</a> <em>European Journal of Wildlife Research</em>, 70, 50.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>U Minh wetlands · two parks in southern Vietnam</strong></p><p>Publisher abstract explicitly names U Minh Thuong and U Minh Ha as the camera-trap study sites. Both are represented by approximate park-area markers.</p><p class="coordinate-note">U Minh Thuong National Park, Vietnam (9.60000, 105.10000); U Minh Ha National Park, Vietnam (9.25000, 104.95000)</p><a href="https://link.springer.com/article/10.1007/s10344-024-01809-z" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-5" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#5 · 2024</div>Trinh, T. M., <span class="pub-author-highlight">Gray, R.</span>, Tran, T. T. H., Le, K. L., Cao, N. L., &amp; Willcox, D. <a class="pub-link" href="https://scholar.google.com/scholar?q=impacts+commercial+civet+farming+central+Vietnam+Trinh+Gray&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">The impacts of commercial civet farming in central Vietnam.</a> <em>Small Carnivore Conservation</em>, 62.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Central Highlands, Vietnam · Lam Dong and Dak Lak</strong></p><p>Primary preprint underlying the civet-farming research places the surveyed farms in Lam Dong and Dak Lak, not the old 15 N / 108 E point. Province-scale markers; individual farms are not pinpointed.</p><p class="coordinate-note">Lam Dong Province, Vietnam (11.65000, 108.15000); Dak Lak Province, Vietnam (12.75000, 108.15000)</p><a href="https://doi.org/10.21203/rs.3.rs-1806075/v1" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-6" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#6 · 2023</div><span class="pub-author-highlight">Gray, R. J.</span> &amp; Gazagne, E. <a class="pub-link" href="https://scholar.google.com/scholar?q=Feasibility+assessment+commercially+available+UAV+sensor+payload+crocodile+population+surveys&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Feasibility assessment of commercially available UAV sensor and payload functions for crocodile population surveys.</a> <em>Herpetology Notes</em>, 16.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Bau Sau (Crocodile Lake), Cat Tien, Vietnam</strong></p><p>Author abstract identifies Bau Sau in Nam Cat Tien National Park. Marker is an approximate lake-area position, not the old site south-west of the park.</p><p class="coordinate-note">Bau Sau (Crocodile Lake), Cat Tien, Vietnam (11.46000, 107.35000)</p><a href="https://orbi.uliege.be/handle/2268/309413" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-7" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#7 · 2023</div>Cao, L., <span class="pub-author-highlight">Gray, R.</span>, Pham, T., et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Records+Greater+Hog+Badger+Arctonyx+collaris+northern+Vietnam+conservation+status&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Records of Greater Hog Badger <em>Arctonyx collaris</em> from northern Vietnam and a discussion of its status in the country.</a> <em>Small Carnivore Conservation</em>, 61.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Cuc Phuong and Pu Mat National Parks, Vietnam</strong></p><p>The paper reports camera-trap records from both parks. The confiscated specimen of unknown wild provenance is not mapped as a wild record.</p><p class="coordinate-note">Cuc Phuong National Park, Vietnam (20.32000, 105.61000); Pu Mat National Park, Vietnam (18.95000, 104.65000)</p><a href="https://www.researchgate.net/publication/372768518_Records_of_Greater_Hog_Badger_Arctonyx_collaris_from_northern_Vietnam_and_a_discussion_of_its_status_in_the_country" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-8" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#8 · 2023</div>Rais, M., Nawaz, M. A., <span class="pub-author-highlight">Gray, R. J.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Niche+suitability+spatial+distribution+patterns+anurans+Ecoregion+mosaic+Northern+Pakistan&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Niche suitability and spatial distribution patterns of anurans in a unique Ecoregion mosaic of Northern Pakistan.</a> <em>PLoS One</em>, 18(6), e0285867.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Rawalpindi District and Islamabad Capital Territory, Pakistan</strong></p><p>The methods provide administrative-area reference coordinates: Rawalpindi 33.4620 N, 73.3709 E; ICT 33.7205 N, 73.0405 E. These represent survey areas, not all 87 survey locations.</p><p class="coordinate-note">Rawalpindi District, Pakistan — published area reference (33.46200, 73.37090); Islamabad Capital Territory, Pakistan — published area reference (33.72050, 73.04050)</p><a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0285867" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-9" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#9 · 2023</div><span class="pub-author-highlight">Gray, R. J.</span>, Van Le, D., Nguyen, H. T. T., et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Home+ranges+activity+patterns+Sunda+pangolins+Manis+javanica+Vietnam&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Home ranges and activity patterns of Sunda pangolins <em>Manis javanica</em> in Vietnam.</a> <em>Journal of Asia-Pacific Biodiversity</em>.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Four protected areas in Vietnam</strong></p><p>Radio tracking used Pu Mat, Cat Tien and U Minh Thuong; the activity analysis also used U Minh Ha camera traps (Table 2). Approximate park markers cover all four components.</p><p class="coordinate-note">Pu Mat National Park, Vietnam (18.95000, 104.65000); Cat Tien National Park, Vietnam (11.43000, 107.42000); U Minh Thuong National Park, Vietnam (9.60000, 105.10000); U Minh Ha National Park, Vietnam (9.25000, 104.95000)</p><a href="https://doi.org/10.1016/j.japb.2023.05.005" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-10" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#10 · 2023</div>Gazagne, E., <span class="pub-author-highlight">Gray, R. J.</span>, Ratajszczak, R., et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=UAVs+thermal+infrared+sensors+effective+monitoring+counting+threatened+Vietnamese+primates&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Unmanned aerial vehicles (UAVs) with thermal infrared (TIR) sensors are effective for monitoring and counting threatened Vietnamese primates.</a> <em>Primates</em>, 1–7.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Endangered Primate Rescue Center, Cuc Phuong, Vietnam</strong></p><p>The pilot surveys were conducted at EPRC, not at the old general point near Hanoi. Marker represents the rescue-centre area.</p><p class="coordinate-note">Endangered Primate Rescue Center, Cuc Phuong, Vietnam (20.25000, 105.71500)</p><a href="https://orbi.uliege.be/handle/2268/306324" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-11" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#11 · 2023</div>Van Pham, T., Trinh, M. T., <span class="pub-author-highlight">Gray, R. J.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Southern+extension+raccoon+dog+Nyctereutes+procyonoides+range+Vietnam+conservation+status&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Southern extension of raccoon dog <em>Nyctereutes procyonoides</em> range in Vietnam with comments on its conservation status.</a> <em>European Journal of Wildlife Research</em>, 69(2), 22.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Pu Mat National Park, Nghe An, Vietnam</strong></p><p>The direct camera-trap evidence is from Pu Mat; trade/rescue reports in the same paper are not treated as verified wild-origin sites. Approximate park-area marker.</p><p class="coordinate-note">Pu Mat National Park, Vietnam (18.95000, 104.65000)</p><a href="https://link.springer.com/article/10.1007/s10344-023-01653-7" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-12" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#12 · 2023</div>Mfossa, D. M., Gazagne, E., <span class="pub-author-highlight">Gray, R. J.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Montane+grassland+resources+gorilla+nesting+behaviors+Ebo+forest+Cameroon&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Montane grassland resources drive gorilla (<em>Gorilla gorilla</em>) nesting behaviors in the Ebo forest, Cameroon.</a> <em>European Journal of Wildlife Research</em>, 69(2), 31.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Ebo Forest, Littoral Region, Cameroon</strong></p><p>Methods locate the work in north-eastern Ebo Forest. The paper gives the wider forest bounds as 4.086–4.517 N, 10.050–10.642 E. Marker at 4.40 N, 10.40 E is explicitly an approximate forest-area reference, not a nest location.</p><p class="coordinate-note">North-eastern Ebo Forest, Cameroon (4.40000, 10.40000)</p><a href="https://link.springer.com/article/10.1007/s10344-023-01660-8" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-13" data-type="preprint"><span class="pub-type">Preprint</span><div class="pub-num">#13 · 2023</div>Nguyen, H. T., Willcox, D., <span class="pub-author-highlight">Gray, R.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Living+Edge+Impacts+Buffer+Zones+Wetland+Carnivores+Vietnam&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Living on the Edge: The Impacts of Buffer Zones on Wetland Carnivores in Vietnam.</a> (Preprint)<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>U Minh Thuong and U Minh Ha buffer zones, Vietnam</strong></p><p>Methods explicitly name community-interview buffer zones around the two parks. Park-area reference markers do not identify respondent households.</p><p class="coordinate-note">U Minh Thuong National Park, Vietnam (9.60000, 105.10000); U Minh Ha National Park, Vietnam (9.25000, 104.95000)</p><a href="https://doi.org/10.21203/rs.3.rs-2695110/v1" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-14" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#14 · 2022</div><span class="pub-author-highlight">Gray, R.</span>, Van Pham, T., Lo, B. T., et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Evidence+Spotted+Linsang+Prionodon+pardicolor+post-weaning+parental+care&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Evidence of Spotted Linsang <em>Prionodon pardicolor</em> post-weaning parental care.</a> <em>Small Carnivore Conservation</em>, 60.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Khe Choang, Pu Mat National Park, Vietnam</strong></p><p>The paper reports 18°55′28.9″N, 104°35′29.5″E. Converted to decimal degrees; the old Central Highlands point was unrelated.</p><p class="coordinate-note">Khe Choang, Pu Mat — published camera-trap locality (18.92469, 104.59153)</p><a href="https://smallcarnivoreconservation.com/index.php/sccg/article/view/3686" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-15" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#15 · 2022</div>Cao, L. N., <span class="pub-author-highlight">Gray, R. J.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Confirmed+evidence+marbled+cat+Pu+Mat+National+Park+Vietnam&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Confirmed evidence of marbled cat in Pu Mat National Park, Vietnam.</a> <em>Cat News</em>, 75, 25–28.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Pu Mat National Park, Vietnam</strong></p><p>The author-uploaded paper gives three Khe Choang camera-trap record coordinates (pages 25–28). All three are converted from degrees/minutes/seconds; the old point was outside the studied park.</p><p class="coordinate-note">Khe Choang, Pu Mat — published marbled-cat record 1 (18.92422, 104.61219); Khe Choang, Pu Mat — published marbled-cat record 2 (18.88250, 104.70400); Khe Choang, Pu Mat — published marbled-cat record 3 (18.92521, 104.65550)</p><a href="https://www.researchgate.net/publication/362861292_Confirmed_evidence_of_Marbled_cat_in_Pu_Mat_National_Park_Vietnam" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-16" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#16 · 2022</div>Feijó, A., Karlsson, C. M., <span class="pub-author-highlight">Gray, R.</span>, Yang, Q., &amp; Hughes, A. C. <a class="pub-link" href="https://scholar.google.com/scholar?q=Extreme-sized+anurans+more+prone+climate-driven+extinctions&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Extreme-sized anurans are more prone to climate-driven extinctions.</a> <em>Climate Change Ecology</em>, 100062.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Global · anuran evolution and climate</strong></p><p>Global comparative and palaeobiological analysis; the old point in the Democratic Republic of the Congo was not a study locality. No single-site marker.</p><a href="https://www.sciencedirect.com/science/article/pii/S2666900522000132" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-17" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#17 · 2022</div>Mulero-Pázmány, M., Martínez-de Dios, J. R., Popa-Lisseanu, A. G., <span class="pub-author-highlight">Gray, R. J.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Development+Fixed-Wing+Drone+System+Aerial+Insect+Sampling&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Development of a Fixed-Wing Drone System for Aerial Insect Sampling.</a> <em>Drones</em>, 6(8), 189.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Donana Natural Area, south-western Spain</strong></p><p>Methods provide 36°59′N, 6°26′W for the study area. Converted to decimal degrees. Replaces the old Madrid-area point.</p><p class="coordinate-note">Doñana Natural Area, Spain — published study-area coordinate (36.98333, -6.43333)</p><a href="https://www.mdpi.com/2504-446X/6/8/189" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-18" data-type="preprint"><span class="pub-type">Preprint</span><div class="pub-num">#18 · 2022</div>Thi, M. T., <span class="pub-author-highlight">Gray, R.</span>, et al. <a class="pub-link" href="https://doi.org/10.21203/rs.3.rs-1806075/v1" target="_blank" rel="noopener">Commercial civet farming practices and conservation impacts on wild civet populations in central Vietnam.</a> (Preprint)</li>
+        <li class="pub-item" id="pub-19" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#19 · 2022</div><span class="pub-author-highlight">Gray, R. J.</span> <a class="pub-link" href="https://scholar.google.com/scholar?q=Settling+score+60-year+literature+debate+Porthidium+yucatanicum+distribution&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Settling the score: notes on the 60-year literature debate of <em>Porthidium yucatanicum</em> distribution.</a> <em>Herpetology Notes</em>, 15, 387–389.</li>
+        <li class="pub-item" id="pub-20" data-type="preprint"><span class="pub-type">Preprint</span><div class="pub-num">#20 · 2022</div><span class="pub-author-highlight">Gray, R.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Status+threats+overlap+pangolins+small+carnivores+disturbed+wetland+mosaic+southern+Vietnam&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Status, threats, and overlap of globally important pangolins and threatened small carnivores in a disturbed wetland mosaic of southern Vietnam.</a> (Preprint)<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>U Minh Thuong and U Minh Ha, Vietnam</strong></p><p>Author-hosted preprint abstract names the same two southern wetland parks, not the old central coastal marker. Approximate park-area references.</p><p class="coordinate-note">U Minh Thuong National Park, Vietnam (9.60000, 105.10000); U Minh Ha National Park, Vietnam (9.25000, 104.95000)</p><a href="https://independent.academia.edu/ThongPham100" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-21" data-type="assessment"><span class="pub-type">Assessment</span><div class="pub-num">#21 · 2022</div>Hansen, M.F., Ang, A., …<span class="pub-author-highlight">Gray, R.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Macaca+fascicularis+IUCN+Red+List+2022&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener"><em>Macaca fascicularis</em>. IUCN Red List of Threatened Species 2022.</a><details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>South and Southeast Asia · species-wide assessment</strong></p><p>A range-wide Red List assessment, not a Kuala Lumpur study. No single-site marker.</p><a href="https://doi.org/10.2305/IUCN.UK.2022-2.RLTS.T12551A221666136.en" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-22" data-type="preprint"><span class="pub-type">Preprint</span><div class="pub-num">#22 · 2022</div><span class="pub-author-highlight">Gray, R.</span> &amp; Karlsson, C. <a class="pub-link" href="https://doi.org/10.32942/osf.io/ub6yn" target="_blank" rel="noopener">101 years of biofluorescent animal studies: trends in literature, novel hypotheses, and best practices moving forward.</a><details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Global · biofluorescence literature review</strong></p><p>Review of records across taxa and regions. An arbitrary Brazilian point misrepresented this synthesis. No single-site marker.</p><a href="https://ecoevorxiv.org/repository/view/3834/" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-23" data-type="preprint"><span class="pub-type">Preprint</span><div class="pub-num">#23 · 2022</div>Lê, N., Hoang, T., Tran, T., … &amp; <span class="pub-author-highlight">Gray, R. J.</span> <a class="pub-link" href="https://scholar.google.com/scholar?q=Renal+morphophysiology+significant+correlate+body+condition+Masked+Palm+Civets+Paguma+larvata&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Renal morphophysiology is not a significant correlate of observable body condition in Masked Palm Civets (<em>Paguma larvata</em>).</a> (Preprint)<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Carnivore and Pangolin Conservation Program, Cuc Phuong, Vietnam</strong></p><p>Methods explicitly place all rescue facilitation and examinations at the programme in Cuc Phuong National Park. Marker is a facility-area reference, not the seized animals’ unknown wild origins.</p><p class="coordinate-note">Carnivore and Pangolin Conservation Program, Cuc Phuong, Vietnam (20.25000, 105.71500)</p><a href="https://www.researchgate.net/publication/361496906_Renal_morphophysiology_is_not_a_significant_correlate_of_observable_body_condition_in_Masked_Palm_Civets_Paguma_larvata" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-24" data-type="report"><span class="pub-type">Working paper</span><div class="pub-num">#24 · 2021</div>Trịnh, T. M., … &amp; <span class="pub-author-highlight">Gray, R. J.</span> <a class="pub-link" href="https://scholar.google.com/scholar?q=effectiveness+policies+addressing+Covid-19+impacts+wildlife+conservation+Vietnam+CIFOR&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">The effectiveness of policies for addressing Covid-19 impacts on wildlife conservation in Vietnam.</a> <em>CIFOR Working Paper</em>.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Vietnam · national policy study</strong></p><p>Literature review, case studies and national policy dialogue concern Vietnam. A representative Vietnam marker is explicitly national in scope, not a survey or author-office location.</p><p class="coordinate-note">Vietnam — national policy analysis (representative country marker) (16.46370, 107.59090)</p><a href="https://researchnow.flinders.edu.au/en/publications/the-effectiveness-of-policies-for-addressing-covid-19-impacts-on-/" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-25" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#25 · 2021</div>Durso, A. M., de Castañeda, R. R., … <span class="pub-author-highlight">Gray, R. J.</span>, &amp; Bolon, I. <a class="pub-link" href="https://scholar.google.com/scholar?q=Citizen+science+online+data+opportunities+challenges+snake+ecology+snakebite+Durso&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Citizen science and online data: Opportunities and challenges for snake ecology and action against snakebite.</a> <em>Toxicon: X</em>, 100071.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Global · citizen science and online snake data</strong></p><p>A review of online data and citizen-science opportunities, not a single Bolivian field study. No single-site marker.</p><a href="https://archive-ouverte.unige.ch/unige:155143" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-26" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#26 · 2021</div>Tozetti, A. M., … <span class="pub-author-highlight">Gray, R.</span>, &amp; Entiauspe-Neto, O. M. <a class="pub-link" href="https://scholar.google.com/scholar?q=Evolutionary+dynamics+shape+two+passive+defensive+mechanisms+Neotropical+snake+radiations&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Evolutionary dynamics shape two passive defensive mechanisms in Neotropical snake radiations.</a> <em>Phyllomedusa</em>, 20(1), 3–13.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Neotropics · comparative snake behaviour</strong></p><p>Comparative synthesis of behaviour across Neotropical snake lineages, not a single Paraguay locality. No single-site marker.</p><a href="https://revistas.usp.br/phyllo/en/article/view/187556" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-27" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#27 · 2021</div>Oliveira, H. F. M., Peters, S. L., <span class="pub-author-highlight">Gray, R. J.</span>, Novaes, R. L. M. <a class="pub-link" href="https://scholar.google.com/scholar?q=First+report+intraspecific+variation+wing+translucency+Neotropical+bat&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">First report of intraspecific variation in wing translucency for a Neotropical bat species.</a> <em>Journal of Bat Research and Conservation</em>.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Brazilian Amazon · Almeirim and Vila Tabajara</strong></p><p>The paper reports Almeirim, Para (00°53′S, 52°36′W), and Vila Tabajara, Machadinho D’Oeste, Rondonia (08°56′S, 62°03′W). Both coordinates are converted from the paper.</p><p class="coordinate-note">Almeirim, Para, Brazil — published locality (-0.88333, -52.60000); Vila Tabajara, Rondonia, Brazil — published locality (-8.93333, -62.05000)</p><a href="https://secemu.org/wp-content/uploads/2022/05/Oliveira_et_al_2021.pdf" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-28" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#28 · 2021</div><span class="pub-author-highlight">Gray, R. J.</span> &amp; Dresser, T. W. <a class="pub-link" href="https://scholar.google.com/scholar?q=Male+combat+striped+kukri+snake+Oligodon+teniatus+Gray+Dresser&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Male combat in the striped kukri snake <em>Oligodon teniatus</em>.</a> <em>Herpetological Bulletin</em>, 155, 30–31.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Sanam Chai Khet District, Chachoengsao, Thailand</strong></p><p>The observation is in Sanam Chai Khet, not north-eastern Thailand. The printed coordinates have malformed minutes (68 and 67); they are not silently normalised. Use a coarse district-area reference and retain the uncertainty.</p><p class="coordinate-note">Sanam Chai Khet District, Thailand — approximate district reference (13.66000, 101.44000)</p><a href="https://www.thebhs.org/publications/the-herpetological-bulletin/issue-number-155-spring-2021/3256-11-male-combat-in-the-striped-kukri-snake-i-oligodon-teniatus-i/file" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-29" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#29 · 2021</div>Entiauspe-Neto, O. M., Koch, C., <span class="pub-author-highlight">Gray, R. J.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Taxonomic+status+Apostolepis+tertulianobeui+integrative+revision+Apostolepis+assimilis&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Taxonomic status of <em>Apostolepis tertulianobeui</em> based on an integrative revision of <em>A. assimilis</em>.</a> <em>Zoologischer Anzeiger</em>, 291, 123–138.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Brazil · taxonomic revision and distribution modelling</strong></p><p>The holotype provenance is an unknown locality in Minas Gerais, and the study integrates additional specimens and distribution modelling. The old single southern-Brazil point was unsupported. No single-site marker.</p><a href="https://cris.fau.de/publications/252101444/" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-30" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#30 · 2021</div>Wilson, G., <span class="pub-author-highlight">Gray, R. J.</span>, Radinal, R. et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Between+rock+hard+place+rugged+terrain+human+disturbance+Sumatran+elephants+Aceh&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Between a rock and a hard place: rugged terrain features and human disturbance affect behaviour and habitat use of Sumatran elephants in Aceh.</a> <em>Biodiversity and Conservation</em>.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Northern Aceh, Sumatra, Indonesia · multi-clan study</strong></p><p>Publisher confirms GPS tracking in Aceh; the figure covers three clans in northern Aceh. A coarse northern-Aceh reference is used, explicitly not a collaring coordinate or telemetry fix.</p><p class="coordinate-note">Northern Aceh, Sumatra — approximate multi-clan study-region reference (4.90000, 96.60000)</p><a href="https://link.springer.com/article/10.1007/s10531-020-02105-3" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-31" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#31 · 2020</div>Saeed, M., Rais, M., <span class="pub-author-highlight">Gray, R. J.</span>, et al. <a class="pub-link" href="https://scholar.google.com/scholar?q=Rise+temperature+decreased+fitness+higher+extinction+risks+endemic+frogs+high+altitude+Pakistan&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Rise in temperature causes decreased fitness and higher extinction risks in endemic frogs at high altitude forested wetlands in northern Pakistan.</a> <em>Journal of Thermal Biology</em>, 102809.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Murree and Ayubia, northern Pakistan</strong></p><p>The methods supply Murree 33.9070 N, 73.3943 E and Ayubia National Park 34.0729 N, 73.3812 E. Both replace the old point far to the north.</p><p class="coordinate-note">Murree, Pakistan — published study-area coordinate (33.90700, 73.39430); Ayubia National Park, Pakistan — published study-area coordinate (34.07290, 73.38120)</p><a href="https://www.sciencedirect.com/science/article/pii/S0306456520305805" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-32" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#32 · 2020</div>Wilson, G., <span class="pub-author-highlight">Gray, R. J.</span>, &amp; Sofyan, H. <a class="pub-link" href="https://scholar.google.com/scholar?q=Identifying+variation+utilization+density+estimators+home+ranges+elephant+clans+Aceh+Sumatra&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Identifying the variation in utilization density estimators and home ranges of elephant clans in Aceh, Sumatra, Indonesia.</a> <em>European Journal of Wildlife Research</em>, 66(6), 1–20.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Aceh, Sumatra, Indonesia · elephant home ranges</strong></p><p>The paper compares GPS-based elephant home ranges in Aceh. Precise telemetry sites were not verified from the accessible publisher text, so only a coarse regional reference is used.</p><p class="coordinate-note">Aceh, Sumatra — approximate study-region reference (4.90000, 96.60000)</p><a href="https://link.springer.com/article/10.1007/s10344-020-01426-6" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-33" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#33 · 2020</div><span class="pub-author-highlight">Gray, R. J.</span> <a class="pub-link" href="https://scholar.google.com/scholar?q=Sorry+we+are+open+Golden+open-access+inequality+non-human+biological+sciences&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Sorry, we're open: Golden open-access and inequality in non-human biological sciences.</a> <em>Scientometrics</em>.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>International · scholarly publishing analysis</strong></p><p>A journal metadata and publishing-inequality analysis, not a London field site. No single-site marker.</p><a href="https://link.springer.com/article/10.1007/s11192-020-03540-3" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-34" data-type="preprint"><span class="pub-type">Preprint</span><div class="pub-num">#34 · 2020</div><span class="pub-author-highlight">Gray, R. J.</span> <a class="pub-link" href="https://scholar.google.com/scholar?q=Exotic+Hobos+Release+escape+secondary+dispersal+African+red-headed+agamas+Florida+railway&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Exotic Hobos: Release, escape, and potential secondary dispersal of African red-headed agamas through the Florida railway systems.</a> <em>BioRxiv</em>.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Florida, USA · introduced agamas and railways</strong></p><p>The study concerns observations and potential dispersal throughout Florida. A coarse state reference replaces the old point outside mainland Florida; it is not a claimed introduction or railway observation site.</p><p class="coordinate-note">Florida, USA — approximate state-wide analysis reference (28.10000, -81.60000)</p><a href="https://doi.org/10.1101/2020.05.11.089649" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-35" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#35 · 2020</div><span class="pub-author-highlight">Gray, R. J.</span> <a class="pub-link" href="https://scholar.google.com/scholar?q=First+report+reproduction+wild+Acanthosaura+cardamomensis+Thailand&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">First report of reproduction in the wild for <em>Acanthosaura cardamomensis</em> in Thailand.</a> <em>Herpetology Notes</em>, 13, 185–186.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Sakaerat Environmental Research Station, Thailand</strong></p><p>The observation note explicitly reports 14.5090 N, 101.9537 E at Sakaerat. Replaces the old general point near central Thailand.</p><p class="coordinate-note">Sakaerat Environmental Research Station, Thailand — published locality (14.50900, 101.95370)</p><a href="https://www.biotaxa.org/hn/article/download/56878/60008" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-36" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#36 · 2019</div><span class="pub-author-highlight">Gray, R. J.</span> <a class="pub-link" href="https://scholar.google.com/scholar?q=Biofluorescent+lateral+patterning+Mossy+Bushfrog+Philautus+macroscelis+biofluorescence+rhacophorid&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Biofluorescent lateral patterning on the Mossy Bushfrog (<em>Philautus macroscelis</em>): the first report of biofluorescence in a rhacophorid frog.</a> <em>Herpetology Notes</em>, 12, 363–364.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>Kinabalu Park, Sabah, Malaysia</strong></p><p>The note explicitly reports 6.0176 N, 116.5373 E, not the old south-western Sabah point.</p><p class="coordinate-note">Kinabalu Park, Sabah, Malaysia — published locality (6.01760, 116.53730)</p><a href="https://www.biotaxa.org/hn/article/view/44245/43278" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-37" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#37 · 2017</div>Hofmann, E. P., <span class="pub-author-highlight">Gray, R. J.</span>, Wilson, L. D., &amp; Townsend, J. H. <a class="pub-link" href="https://scholar.google.com/scholar?q=Discovery+first+male+specimen+Tantilla+hendersoni+new+locality+central+Belize&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Discovery of the first male specimen of <em>Tantilla hendersoni</em> from a new locality in central Belize.</a> <em>Herpetology Notes</em>, 10, 53–57.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>TREES Field Station, Stann Creek, Belize</strong></p><p>The paper reports 17.0508 N, 88.5689 W (WGS84) for the new male specimen, rather than the old offshore point.</p><p class="coordinate-note">TREES Field Station, Stann Creek, Belize (17.05080, -88.56890)</p><a href="https://www.biotaxa.org/hn/article/download/26321/25916" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-38" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#38 · 2017</div><span class="pub-author-highlight">Gray, R.</span> &amp; Strine, C. T. <a class="pub-link" href="https://scholar.google.com/scholar?q=Herpetofaunal+assemblages+lowland+broadleaf+forest+overgrown+orchard+lime+orchard+Stann+Creek+Belize&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Herpetofaunal assemblages of a lowland broadleaf forest, an overgrown orchard forest and a lime orchard in Stann Creek, Belize.</a> <em>ZooKeys</em>, (707), 131.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>TREES Field Station, Stann Creek, Belize</strong></p><p>The methods give four WGS84 trapping-array coordinates in decimal minutes (pages 135–136). These are converted as degrees + minutes/60, not mistaken for decimal degrees.</p><p class="coordinate-note">TREES, Belize — heavily manicured orchard array (17.05240, -88.56913); TREES, Belize — overgrown orchard forest array (17.05050, -88.56743); TREES, Belize — overgrown orchard riparian array (17.05083, -88.56897); TREES, Belize — lowland broadleaf forest array (17.05047, -88.56740)</p><a href="https://doi.org/10.3897/zookeys.707.14029" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+        <li class="pub-item" id="pub-39" data-type="article"><span class="pub-type">Journal article</span><div class="pub-num">#39 · 2017</div><span class="pub-author-highlight">Gray, R. J.</span> &amp; Hofmann, E. P. <a class="pub-link" href="https://scholar.google.com/scholar?q=Two+new+herpetofaunal+records+Stann+Creek+District+Belize+Gray+Hofmann&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener">Two new herpetofaunal records for Stann Creek District, Belize.</a> <em>Mesoamerican Herpetology</em>.<details class="pub-geography"><summary>Study geography &amp; source</summary><p><strong>TREES Field Station, Stann Creek, Belize</strong></p><p>Pages 204–207 give separate WGS84 coordinates for the Bolitoglossa and Ninia records. Both are retained; nearby or shared locality markers are grouped on the map.</p><p class="coordinate-note">TREES, Belize — published Bolitoglossa record (17.05047, -88.56740); TREES, Belize — published Ninia record (17.05050, -88.56743)</p><a href="https://mesoamericanherpetology.com/uploads/3/4/7/9/34798824/mh_4-1_other_contributions.pdf" target="_blank" rel="noopener">View geographic evidence ↗</a></details></li>
+      <li class="pub-item" id="pub-book-fungi" data-type="book"><span class="pub-type">Book</span><div class="pub-num">#1 · 2018</div><span class="pub-author-highlight">Gray, R.</span> (2018). <a class="pub-link" href="https://scholar.google.com/scholar?q=Fungi+of+Belize+Russell+Gray+Global+Explorer+Press&amp;hl=en&amp;as_sdt=0,5" target="_blank" rel="noopener"><em>Fungi of Belize.</em></a> Global Explorer Press.</li></ul>
       </div>
-      <div style="margin-top:20px">
-        <div class="section-heading" style="margin-top:10px"><i class="fas fa-book"></i>Books</div>
-        <div class="pub-item"><div class="pub-num">#1 · 2018</div><span class="pub-author-highlight">Gray, R.</span> (2018). <a class="pub-link" href="https://scholar.google.com/scholar?q=Fungi+of+Belize+Russell+Gray+Global+Explorer+Press&hl=en&as_sdt=0,5" target="_blank"><em>Fungi of Belize.</em></a> Global Explorer Press.</div>
-      </div>
+      <div style="margin-top:20px"></div>
     </div>
   </section>
 
   <!-- GRANTS ───────────────────────────────────── -->
-  <section id="grants" class="page">
+  <section id="grants" class="page" aria-labelledby="grants-heading">
     <div class="card">
-      <div class="section-heading"><i class="fas fa-trophy"></i>Grants Awarded (as PI / Co-PI)</div>
+      <h2 class="section-heading" id="grants-heading">Selected grant awards · PI / Co-PI</h2>
       <div class="grant-item"><span class="grant-year">2022</span><div class="grant-text"><strong>IWT Challenge Fund</strong> — Dismantling illegal pangolin trade in Vietnam <span style="color:var(--gold)">£999,250</span></div></div>
       <div class="grant-item"><span class="grant-year">2022–23</span><div class="grant-text"><strong>Rufford Small Grants</strong> — In search of the Critically Endangered Chinese pangolin in Northern Vietnam <span style="color:var(--gold)">€12,000</span></div></div>
       <div class="grant-item"><span class="grant-year">2022</span><div class="grant-text"><strong>Rufford Small Grants</strong> — Poachers, patrols, and protection: An integrative solution to Owston's Civet conservation in Vietnam <span style="color:var(--gold)">€5,960</span></div></div>
@@ -997,8 +1107,8 @@
     </div>
 
     <div class="card">
-      <div class="section-heading"><i class="fas fa-tasks"></i>Grants / Budgets Managed</div>
-      <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:18px">In addition to grants above, I have managed organizational grants, designed workplans, budgets, implementation, M&amp;E, and reports for:</p>
+      <h2 class="section-heading"><i class="fas fa-tasks" aria-hidden="true"></i>Grants / Budgets Managed</h2>
+      <p style="font-size:0.95rem;color:var(--text-dim);margin-bottom:18px">In addition to grants above, I have managed organizational grants, designed workplans, budgets, implementation, M&amp;E, and reports for:</p>
       <div style="display:flex;flex-wrap:wrap;gap:10px">
         <div class="grant-item" style="flex:1;min-width:200px"><span class="grant-year">~€600K</span><div class="grant-text"><strong>Fondation Segre</strong></div></div>
         <div class="grant-item" style="flex:1;min-width:200px"><span class="grant-year">~$1.4M</span><div class="grant-text"><strong>USAID</strong></div></div>
@@ -1006,7 +1116,7 @@
         <div class="grant-item" style="flex:1;min-width:200px"><span class="grant-year">~€200K</span><div class="grant-text"><strong>Oak Foundation</strong></div></div>
         <div class="grant-item" style="flex:1;min-width:200px"><span class="grant-year">~$300K</span><div class="grant-text"><strong>Conservation Global</strong></div></div>
         <div class="grant-item" style="flex:1;min-width:200px"><span class="grant-year">~$100K</span><div class="grant-text"><strong>Synchronicity Earth</strong></div></div>
-        <div class="grant-item" style="flex:1;min-width:200px"><span class="grant-year">~$100K</span><div class="grant-text"><strong>David Shephard Wildlife Fund</strong></div></div>
+        <div class="grant-item" style="flex:1;min-width:200px"><span class="grant-year">~$100K</span><div class="grant-text"><strong>David Shepherd Wildlife Foundation</strong></div></div>
         <div class="grant-item" style="flex:1;min-width:200px"><span class="grant-year">~$100K</span><div class="grant-text"><strong>Mandai Nature</strong></div></div>
         <div class="grant-item" style="flex:1;min-width:200px"><span class="grant-year">$30K</span><div class="grant-text"><strong>National Geographic</strong></div></div>
       </div>
@@ -1014,20 +1124,18 @@
   </section>
 
   <!-- PORTFOLIO ────────────────────────────────── -->
-  <section id="portfolio" class="page">
+  <section id="portfolio" class="page" aria-labelledby="portfolio-heading">
 
     <!-- Hero banner -->
     <div class="hero-card" style="margin-bottom:20px">
       <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px">
-        <div style="width:48px;height:48px;border-radius:10px;background:var(--gold-glow);border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--gold)"><i class="fas fa-satellite-dish"></i></div>
+        <div style="width:48px;height:48px;border-radius:10px;background:var(--gold-glow);border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--gold)"><i class="fas fa-satellite-dish" aria-hidden="true"></i></div>
         <div>
-          <div class="hero-name" style="font-size:1.5rem">Global Monitoring System</div>
-          <div class="hero-subtitle" style="margin-bottom:0">ECOSOLVE · GI-TOC · 2024–Present</div>
+          <h2 class="hero-name" style="font-size:1.5rem" id="portfolio-heading">Selected work</h2>
+          <div class="hero-subtitle" style="margin-bottom:0">Intelligence · science · software</div>
         </div>
       </div>
-      <p class="hero-bio">
-        As Head of Data for the Global Monitoring System, I direct an 11-country network of OSINT analysts conducting covert digital surveillance of illegal wildlife trade (IWT) networks. Analysts monitor encrypted messaging platforms, social media, and e-commerce ecosystems to develop actionable intelligence packages delivered to national and international law enforcement for ground operations — bridging open-source intelligence with kinetic disruption of transnational organised crime.
-      </p>
+      <p class="hero-bio">I combine research, analytical tools and programme leadership to turn complex wildlife and environmental data into useful evidence. These examples bring together public outputs and the responsibilities described in my experience.</p>
       <div class="tag-list" style="margin-top:16px">
         <span class="tag gold">Transnational Organised Crime</span>
         <span class="tag gold">OSINT</span>
@@ -1039,58 +1147,66 @@
         <span class="tag gold">IWT Disruption</span>
       </div>
     </div>
+<div class="card"><h2 class="section-heading">Selected projects &amp; outputs</h2>
+<div class="work-grid">
+<article class="work-card"><span class="eyebrow">Software &amp; data</span><h3>Environmental Intelligence Dashboard</h3><p>A public dashboard bringing environmental indicators and intelligence sources into one interface.</p><a href="#dashboard">Explore the dashboard →</a><a href="https://rjgray-ecosolve.github.io/env-intel-dashboard/" target="_blank" rel="noopener">Open in a full window ↗</a></article>
+<article class="work-card"><span class="eyebrow">Interactive simulation</span><h3>Exotic Wildlife Trafficking Simulator</h3><p>Explore how demand, social media, wildlife scarcity and enforcement reshape exotic wildlife trafficking. Follow shipments, compare actual and declared origins, and test changes to demand and enforcement.</p><a href="https://rjgrayecology.github.io/Exotic-Wildlife-Trade-Simulator/" target="_blank" rel="noopener">Explore the simulator ↗</a></article>
+<article class="work-card"><span class="eyebrow">Intelligence &amp; policy · 2026</span><h3>Wildlife has a Facebook problem</h3><p>Co-authored analysis of how online platforms facilitate illegal wildlife trade, published by GI-TOC.</p><a href="https://globalinitiative.net/analysis/wildlife-has-a-facebook-problem/" target="_blank" rel="noopener">Read the published analysis ↗</a></article>
+<article class="work-card"><span class="eyebrow">Conservation research</span><h3>Species monitoring &amp; recovery</h3><p>Research on pangolins, small carnivores, elephants, reptiles and primates, using field surveys, camera traps, telemetry and drones.</p><a href="#publications">Browse research publications →</a></article>
+<article class="work-card"><span class="eyebrow">Programme delivery</span><h3>Grants &amp; conservation programmes</h3><p>Experience writing and managing grants, developing workplans and budgets, and establishing monitoring and evaluation systems.</p><a href="#grants">View selected grants →</a></article>
+</div></div>
 
     <!-- Analyst network map card -->
     <div class="card" style="margin-bottom:20px">
-      <div class="section-heading"><i class="fas fa-globe"></i>Global Analyst Network</div>
-      <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:18px">Coordinating specialist OSINT analysts embedded across 11 countries, each covering distinct trafficking corridors, regional platforms, and local law enforcement ecosystems.</p>
+      <h2 class="section-heading"><i class="fas fa-globe" aria-hidden="true"></i>Global Analyst Network</h2>
+      <p style="font-size:0.95rem;color:var(--text-dim);margin-bottom:18px">Coordinating specialist OSINT analysts embedded across 11 countries, each covering distinct trafficking corridors, regional platforms, and local law enforcement ecosystems.</p>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px">
-        <div class="ops-region"><span class="ops-flag">🇹🇭</span><div class="ops-rname">Thailand</div><div class="ops-rdesc">Southeast Asia collection hub monitoring platform migration and cross-border trafficking spillover.</div></div>
-        <div class="ops-region"><span class="ops-flag">🇮🇩</span><div class="ops-rname">Indonesia</div><div class="ops-rdesc">Archipelagic route surveillance across online wildlife trade clusters and maritime-linked supply chains.</div></div>
-        <div class="ops-region"><span class="ops-flag">🇮🇳</span><div class="ops-rname">India / South Asia</div><div class="ops-rdesc">Regional intelligence coverage for high-volume domestic marketplaces and South Asian trafficking interfaces.</div></div>
-        <div class="ops-region"><span class="ops-flag">🇦🇪</span><div class="ops-rname">UAE / MENA</div><div class="ops-rdesc">Transit and luxury demand intelligence in key MENA digital markets and redistribution corridors.</div></div>
-        <div class="ops-region"><span class="ops-flag">🇨🇲</span><div class="ops-rname">Cameroon</div><div class="ops-rdesc">Central African source-market monitoring, with focus on bushmeat and live wildlife trafficking streams.</div></div>
-        <div class="ops-region"><span class="ops-flag">🇳🇬</span><div class="ops-rname">Nigeria</div><div class="ops-rdesc">West African trafficking facilitator mapping and priority actor monitoring across social commerce channels.</div></div>
-        <div class="ops-region"><span class="ops-flag">🇿🇦</span><div class="ops-rname">South Africa</div><div class="ops-rdesc">Southern African network analysis around horn, big cat, and reptile commodity flows.</div></div>
-        <div class="ops-region"><span class="ops-flag">🇧🇷</span><div class="ops-rname">Brazil</div><div class="ops-rdesc">Latin American source and demand-side monitoring for birds, reptiles, and medicinal wildlife products.</div></div>
-        <div class="ops-region"><span class="ops-flag">🇨🇴</span><div class="ops-rname">Colombia</div><div class="ops-rdesc">Andean and Amazonian intelligence support on digital brokers and transshipment patterns.</div></div>
-        <div class="ops-region"><span class="ops-flag">🇲🇽</span><div class="ops-rname">Mexico</div><div class="ops-rdesc">Northbound corridor monitoring tied to pet trade demand networks and platform-based distributors.</div></div>
-        <div class="ops-region"><span class="ops-flag">🇨🇿</span><div class="ops-rname">Czech Republic</div><div class="ops-rdesc">European analyst node supporting trade monitoring and EU partner coordination.</div></div>
+        <div class="ops-region"><span class="ops-flag">🇹🇭</span><h3 class="ops-rname">Thailand</h3><div class="ops-rdesc">Southeast Asia collection hub monitoring platform migration and cross-border trafficking spillover.</div></div>
+        <div class="ops-region"><span class="ops-flag">🇮🇩</span><h3 class="ops-rname">Indonesia</h3><div class="ops-rdesc">Archipelagic route surveillance across online wildlife trade clusters and maritime-linked supply chains.</div></div>
+        <div class="ops-region"><span class="ops-flag">🇮🇳</span><h3 class="ops-rname">India / South Asia</h3><div class="ops-rdesc">Regional intelligence coverage for high-volume domestic marketplaces and South Asian trafficking interfaces.</div></div>
+        <div class="ops-region"><span class="ops-flag">🇦🇪</span><h3 class="ops-rname">UAE / MENA</h3><div class="ops-rdesc">Transit and luxury demand intelligence in key MENA digital markets and redistribution corridors.</div></div>
+        <div class="ops-region"><span class="ops-flag">🇨🇲</span><h3 class="ops-rname">Cameroon</h3><div class="ops-rdesc">Central African source-market monitoring, with focus on bushmeat and live wildlife trafficking streams.</div></div>
+        <div class="ops-region"><span class="ops-flag">🇳🇬</span><h3 class="ops-rname">Nigeria</h3><div class="ops-rdesc">West African trafficking facilitator mapping and priority actor monitoring across social commerce channels.</div></div>
+        <div class="ops-region"><span class="ops-flag">🇿🇦</span><h3 class="ops-rname">South Africa</h3><div class="ops-rdesc">Southern African network analysis around horn, big cat, and reptile commodity flows.</div></div>
+        <div class="ops-region"><span class="ops-flag">🇧🇷</span><h3 class="ops-rname">Brazil</h3><div class="ops-rdesc">Latin American source and demand-side monitoring for birds, reptiles, and medicinal wildlife products.</div></div>
+        <div class="ops-region"><span class="ops-flag">🇨🇴</span><h3 class="ops-rname">Colombia</h3><div class="ops-rdesc">Andean and Amazonian intelligence support on digital brokers and transshipment patterns.</div></div>
+        <div class="ops-region"><span class="ops-flag">🇲🇽</span><h3 class="ops-rname">Mexico</h3><div class="ops-rdesc">Northbound corridor monitoring tied to pet trade demand networks and platform-based distributors.</div></div>
+        <div class="ops-region"><span class="ops-flag">🇨🇿</span><h3 class="ops-rname">Czech Republic</h3><div class="ops-rdesc">European analyst node supporting trade monitoring and EU partner coordination.</div></div>
       </div>
     </div>
 
     <!-- Capability pillars -->
     <div class="card" style="margin-bottom:20px">
-      <div class="section-heading"><i class="fas fa-crosshairs"></i>Intelligence Capabilities</div>
+      <h2 class="section-heading"><i class="fas fa-crosshairs" aria-hidden="true"></i>Intelligence Capabilities</h2>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px">
         <div class="cap-card">
-          <div class="cap-icon"><i class="fas fa-magnifying-glass-chart"></i></div>
-          <div class="cap-title">OSINT Collection &amp; Analysis</div>
+          <div class="cap-icon"><i class="fas fa-magnifying-glass-chart" aria-hidden="true"></i></div>
+          <h3 class="cap-title">OSINT Collection &amp; Analysis</h3>
           <div class="cap-body">End-to-end collection cycles targeting online IWT marketplaces, encrypted channels (Telegram, WhatsApp, Signal), e-commerce, web forums, and social media platforms. Analysts produce structured intelligence reports on trafficking actors, commodities, routes, and pricing.</div>
         </div>
         <div class="cap-card">
-          <div class="cap-icon"><i class="fas fa-map-location-dot"></i></div>
-          <div class="cap-title">GeoINT &amp; Pattern-of-Life Analysis</div>
+          <div class="cap-icon"><i class="fas fa-map-location-dot" aria-hidden="true"></i></div>
+          <h3 class="cap-title">GeoINT &amp; Pattern-of-Life Analysis</h3>
           <div class="cap-body">Geospatial intelligence integrating trafficking route data, seizure records, and digital footprints. Produces pattern-of-life assessments of priority suspects and identifies logistical nodes within smuggling networks for law enforcement targeting.</div>
         </div>
         <div class="cap-card">
-          <div class="cap-icon"><i class="fas fa-network-wired"></i></div>
-          <div class="cap-title">Network Mapping &amp; Link Analysis</div>
+          <div class="cap-icon"><i class="fas fa-network-wired" aria-hidden="true"></i></div>
+          <h3 class="cap-title">Network Mapping &amp; Link Analysis</h3>
           <div class="cap-body">Social network analysis and actor mapping of IWT syndicates, identifying key brokers, financiers, and logistics operators within transnational organised crime structures. Supports strategic prioritisation of high-value targets.</div>
         </div>
         <div class="cap-card">
-          <div class="cap-icon"><i class="fas fa-robot"></i></div>
-          <div class="cap-title">AI-Powered Monitoring Tools</div>
+          <div class="cap-icon"><i class="fas fa-robot" aria-hidden="true"></i></div>
+          <h3 class="cap-title">AI-Powered Monitoring Tools</h3>
           <div class="cap-body">Development and deployment of AI/ML pipelines for automated detection of wildlife trade listings across platforms. Supports analysts with classification models, NLP-based keyword systems, and image recognition to scale monitoring coverage.</div>
         </div>
         <div class="cap-card">
-          <div class="cap-icon"><i class="fas fa-shield-halved"></i></div>
-          <div class="cap-title">Law Enforcement Coordination</div>
-          <div class="cap-body">Co-liaison with national wildlife crime units, INTERPOL, UNODC, and regional task forces. Coordinated reviews on intelligence packages formatted as actionable case files delivered to partners for arrest operations, customs intercepts, and financial investigations.</div>
+          <div class="cap-icon"><i class="fas fa-shield-halved" aria-hidden="true"></i></div>
+          <h3 class="cap-title">Law Enforcement Coordination</h3>
+          <div class="cap-body">Co-liaison with national wildlife crime units, INTERPOL, UNODC, and regional task forces. Coordinated reviews on intelligence packages formatted as actionable case files delivered to partners for investigations and enforcement decisions.</div>
         </div>
         <div class="cap-card">
-          <div class="cap-icon"><i class="fas fa-users-gear"></i></div>
-          <div class="cap-title">Team Leadership &amp; Tradecraft Training</div>
+          <div class="cap-icon"><i class="fas fa-users-gear" aria-hidden="true"></i></div>
+          <h3 class="cap-title">Team Leadership &amp; Tradecraft Training</h3>
           <div class="cap-body">Recruiting, onboarding, and developing analysts across 11 countries. Establishing SOPs for digital security, source handling, intelligence product formatting, and platform-specific collection tradecraft. Maintains operational security across a distributed global team.</div>
         </div>
       </div>
@@ -1098,36 +1214,36 @@
 
     <!-- Operational context cards -->
     <div class="card" style="margin-bottom:20px">
-      <div class="section-heading"><i class="fas fa-file-shield"></i>Operational Highlights</div>
+      <h2 class="section-heading"><i class="fas fa-file-shield" aria-hidden="true"></i>Operational Highlights</h2>
       <div class="timeline">
         <div class="tl-item">
-          <div class="tl-title">Global Monitoring System — Architecture &amp; Build</div>
-          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2024–Present</div>
-          <div class="tl-body">Co-designed and build support of the operational architecture of GI-TOC's Global Monitoring System — including analyst workflows, intelligence product templates, tasking systems, platform coverage matrices, and data pipelines feeding into the ECOSOLVE platform.</div>
+          <h3 class="tl-title">Global Monitoring System — Architecture &amp; Build</h3>
+          <div class="tl-meta"><i class="fas fa-calendar-alt" aria-hidden="true"></i> 2024–Present</div>
+          <div class="tl-body">Co-designed and supported the development of the operational architecture of GI-TOC's Global Monitoring System — including analyst workflows, intelligence product templates, tasking systems, platform coverage matrices, and data pipelines feeding into the ECOSOLVE platform.</div>
         </div>
         <div class="tl-item">
-          <div class="tl-title">gmstools developer</div>
-          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2024–Present</div>
-          <div class="tl-body">Developed the digital toolkit for scoping, monitoring, analysis, and OSINT work for online illegal wildlife trade, standardizing the way cyber units monitor and disrupt IWT networks.</div>
+          <h3 class="tl-title">gmstools developer</h3>
+          <div class="tl-meta"><i class="fas fa-calendar-alt" aria-hidden="true"></i> 2024–Present</div>
+          <div class="tl-body">Developed the digital toolkit for scoping, monitoring, analysis, and OSINT work for online illegal wildlife trade, standardising the way cyber units monitor and disrupt IWT networks.</div>
         </div>
         <div class="tl-item">
-          <div class="tl-title">11-Country Analyst Network — Coordination</div>
-          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2024–Present</div>
+          <h3 class="tl-title">11-Country Analyst Network — Coordination</h3>
+          <div class="tl-meta"><i class="fas fa-calendar-alt" aria-hidden="true"></i> 2024–Present</div>
           <div class="tl-body">Daily coordination of geographically distributed analyst teams across Africa, Asia, the Americas, and Europe. Manages tasking priorities, product quality assurance, inter-analyst information sharing, and translation of strategic intelligence requirements into collection tasks.</div>
         </div>
         <div class="tl-item">
-          <div class="tl-title">AI Products for IWT Detection</div>
-          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2024–Present</div>
+          <h3 class="tl-title">AI Products for IWT Detection</h3>
+          <div class="tl-meta"><i class="fas fa-calendar-alt" aria-hidden="true"></i> 2024–Present</div>
           <div class="tl-body">Co-developing machine learning and NLP tools to automate detection of IWT content across major e-commerce and social media platforms, enabling analyst teams to focus collection capacity on priority leads rather than manual scanning.</div>
         </div>
         <div class="tl-item">
-          <div class="tl-title">Law Enforcement Intelligence Packages</div>
-          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2024–Present</div>
+          <h3 class="tl-title">Law Enforcement Intelligence Packages</h3>
+          <div class="tl-meta"><i class="fas fa-calendar-alt" aria-hidden="true"></i> 2024–Present</div>
           <div class="tl-body">Production and delivery of structured intelligence reports on priority trafficking networks and individual suspects to national wildlife crime units, customs authorities, and international bodies including INTERPOL and UNODC. Intelligence directly supports ground-level interdiction operations.</div>
         </div>
         <div class="tl-item">
-          <div class="tl-title">IWT Disruption Operations — Save Vietnam's Wildlife</div>
-          <div class="tl-meta"><i class="fas fa-calendar-alt"></i> 2021–2024</div>
+          <h3 class="tl-title">IWT Disruption Operations — Save Vietnam's Wildlife</h3>
+          <div class="tl-meta"><i class="fas fa-calendar-alt" aria-hidden="true"></i> 2021–2024</div>
           <div class="tl-body">Prior to GMS, guided OSINT-informed anti-poaching and IWT interception operations across five protected areas in Vietnam. Developed analytical frameworks for patrol data (SMART), trafficking network mapping, and demand-reduction social research across seven provinces.</div>
         </div>
       </div>
@@ -1135,7 +1251,7 @@
 
     <!-- Key competencies footer strip -->
     <div class="card">
-      <div class="section-heading"><i class="fas fa-id-badge"></i>Core Competencies</div>
+      <h2 class="section-heading"><i class="fas fa-id-badge" aria-hidden="true"></i>Core Competencies</h2>
       <div class="tag-list">
         <span class="tag">Wildlife Crime Intelligence</span>
         <span class="tag">Transnational Organised Crime Analysis</span>
@@ -1159,114 +1275,209 @@
 
   </section>
 
-</main>
+<footer class="site-footer"><span>Russell J. Gray · Updated 2 November 2026</span><a href="https://github.com/RJGrayEcology/CV" target="_blank" rel="noopener">View site source ↗</a></footer></main>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  // ── Navigation ─────────────────────────────────────
-  function showPage(id, btn) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    btn.classList.add('active');
-    animateSkillBars();
+  const pageNames = { about:'About', resume:'Experience', publications:'Publications', grants:'Grants', portfolio:'Selected work', dashboard:'Dashboard' };
+  function showPage(id, focusContent = false) {
+    if (!pageNames[id]) id = 'about';
+    document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === id));
+    document.querySelectorAll('.nav-btn').forEach(a => {
+      const active = a.dataset.page === id;
+      a.classList.toggle('active', active);
+      if (active) a.setAttribute('aria-current', 'page');
+      else a.removeAttribute('aria-current');
+    });
+    document.title = 'Russell J. Gray — ' + pageNames[id];
+    if (id === 'publications') initMap();
+    if (focusContent) {
+      document.getElementById('main-content').focus({ preventScroll:true });
+      window.scrollTo({ top:0, behavior:'auto' });
+    }
+  }
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    if (a.classList.contains('skip-link')) return;
+    a.addEventListener('click', e => {
+      const id = a.getAttribute('href').slice(1);
+      if (!pageNames[id] || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      history.pushState(null, '', '#' + id);
+      showPage(id, true);
+    });
+  });
+  const restoreRoute = () => {
+    const id = location.hash.slice(1);
+    if (!id || pageNames[id]) showPage(id || 'about', true);
+  };
+  window.addEventListener('popstate', restoreRoute);
+  window.addEventListener('hashchange', restoreRoute);
+  document.querySelectorAll('.print-button').forEach(b => b.addEventListener('click', () => window.print()));
+  function filterPublications() {
+    const q = document.getElementById('publication-search').value.trim().toLowerCase();
+    const type = document.getElementById('publication-type').value;
+    const rows = [...document.querySelectorAll('.pub-list .pub-item')];
+    let count = 0;
+    rows.forEach(row => {
+      row.hidden = !((type === 'all' || row.dataset.type === type) && row.textContent.toLowerCase().includes(q));
+      if (!row.hidden) count++;
+    });
+    document.getElementById('publication-results').textContent = count + ' of ' + rows.length + ' works shown';
+    document.getElementById('publication-empty').hidden = count !== 0;
+  }
+  function clearPublicationFilters() {
+    document.getElementById('publication-search').value = '';
+    document.getElementById('publication-type').value = 'all';
+    filterPublications();
+  }
+  function jumpToPublication(number) {
+    clearPublicationFilters();
+    const pubEl=document.getElementById('pub-'+number);
+    if (!pubEl) return;
+    document.querySelectorAll('.pub-item.highlight').forEach(el=>el.classList.remove('highlight'));
+    pubEl.classList.add('highlight');
+    const geography=pubEl.querySelector('.pub-geography');
+    if (geography) geography.open=true;
+    pubEl.scrollIntoView({behavior:'auto',block:'start'});
+  }
+  document.getElementById('publication-search').addEventListener('input', filterPublications);
+  document.getElementById('publication-type').addEventListener('change', filterPublications);
+  document.getElementById('clear-publication-filters').addEventListener('click', clearPublicationFilters);
+  document.getElementById('view-research-map').addEventListener('click', () => {
+    document.getElementById('map').scrollIntoView({ behavior:'smooth', block:'center' });
+  });
+  document.getElementById('load-dashboard').addEventListener('click', event => {
+    const frame = document.querySelector('#dashboard iframe');
+    frame.src = frame.dataset.src;
+    event.currentTarget.hidden = true;
+  });
+  filterPublications();
+  const paperGeography = [{"pubNum": 1, "scope": "Vietnam · national conservation assessment", "source": "https://orbi.uliege.be/handle/2268/345168", "evidence": "Country-wide prioritisation of Vietnamese species and protected areas; no single field site. The marker at Hue is an explicitly representative in-country reference, not a survey locality.", "locations": [{"lat": 16.4637, "lng": 107.5909, "label": "Vietnam — nationwide assessment (representative country marker)", "precision": "country"}], "title": "Prioritising natural heritage: evaluating distribution, threats, and conservation needs of species recovery targets in Vietnam."}, {"pubNum": 2, "scope": "Southeast Asia · 11-country synthesis", "source": "https://conbio.onlinelibrary.wiley.com/doi/10.1111/conl.13105", "evidence": "88 expert questionnaires cover sites across 11 countries. A single Borneo point did not represent the paper. No arbitrary single-site marker retained.", "locations": [], "title": "Mapping multiple wild pig species' population dynamics in Southeast Asia during the African swine fever outbreak (2018–2024)."}, {"pubNum": 3, "scope": "Global · primate distributions", "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11564740/", "evidence": "A global detectability model covering 389 primate species, not a Singapore field study. No single-site marker.", "locations": [], "title": "Development of a global thermal detection index to prioritize primate research with thermal drones."}, {"pubNum": 4, "scope": "U Minh wetlands · two parks in southern Vietnam", "source": "https://link.springer.com/article/10.1007/s10344-024-01809-z", "evidence": "Publisher abstract explicitly names U Minh Thuong and U Minh Ha as the camera-trap study sites. Both are represented by approximate park-area markers.", "locations": [{"lat": 9.6, "lng": 105.1, "label": "U Minh Thuong National Park, Vietnam", "precision": "area"}, {"lat": 9.25, "lng": 104.95, "label": "U Minh Ha National Park, Vietnam", "precision": "area"}], "title": "Camera trapping in Southern Vietnam: unveiling relative abundance, activity patterns, and conservation challenges of globally threatened pangolins and small carnivores."}, {"pubNum": 5, "scope": "Central Highlands, Vietnam · Lam Dong and Dak Lak", "source": "https://doi.org/10.21203/rs.3.rs-1806075/v1", "evidence": "Primary preprint underlying the civet-farming research places the surveyed farms in Lam Dong and Dak Lak, not the old 15 N / 108 E point. Province-scale markers; individual farms are not pinpointed.", "locations": [{"lat": 11.65, "lng": 108.15, "label": "Lam Dong Province, Vietnam", "precision": "area"}, {"lat": 12.75, "lng": 108.15, "label": "Dak Lak Province, Vietnam", "precision": "area"}], "additionalSources": ["https://www.researchgate.net/publication/361807458_Commercial_civet_farming_practices_and_conservation_impacts_on_wild_civet_populations_in_central_Vietnam"], "title": "The impacts of commercial civet farming in central Vietnam."}, {"pubNum": 6, "scope": "Bau Sau (Crocodile Lake), Cat Tien, Vietnam", "source": "https://orbi.uliege.be/handle/2268/309413", "evidence": "Author abstract identifies Bau Sau in Nam Cat Tien National Park. Marker is an approximate lake-area position, not the old site south-west of the park.", "locations": [{"lat": 11.46, "lng": 107.35, "label": "Bau Sau (Crocodile Lake), Cat Tien, Vietnam", "precision": "area"}], "title": "Feasibility assessment of commercially available UAV sensor and payload functions for crocodile population surveys."}, {"pubNum": 7, "scope": "Cuc Phuong and Pu Mat National Parks, Vietnam", "source": "https://www.researchgate.net/publication/372768518_Records_of_Greater_Hog_Badger_Arctonyx_collaris_from_northern_Vietnam_and_a_discussion_of_its_status_in_the_country", "evidence": "The paper reports camera-trap records from both parks. The confiscated specimen of unknown wild provenance is not mapped as a wild record.", "locations": [{"lat": 20.32, "lng": 105.61, "label": "Cuc Phuong National Park, Vietnam", "precision": "area"}, {"lat": 18.95, "lng": 104.65, "label": "Pu Mat National Park, Vietnam", "precision": "area"}], "title": "Records of Greater Hog Badger Arctonyx collaris from northern Vietnam and a discussion of its status in the country."}, {"pubNum": 8, "scope": "Rawalpindi District and Islamabad Capital Territory, Pakistan", "source": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0285867", "evidence": "The methods provide administrative-area reference coordinates: Rawalpindi 33.4620 N, 73.3709 E; ICT 33.7205 N, 73.0405 E. These represent survey areas, not all 87 survey locations.", "locations": [{"lat": 33.462, "lng": 73.3709, "label": "Rawalpindi District, Pakistan — published area reference", "precision": "published"}, {"lat": 33.7205, "lng": 73.0405, "label": "Islamabad Capital Territory, Pakistan — published area reference", "precision": "published"}], "title": "Niche suitability and spatial distribution patterns of anurans in a unique Ecoregion mosaic of Northern Pakistan."}, {"pubNum": 9, "scope": "Four protected areas in Vietnam", "source": "https://doi.org/10.1016/j.japb.2023.05.005", "evidence": "Radio tracking used Pu Mat, Cat Tien and U Minh Thuong; the activity analysis also used U Minh Ha camera traps (Table 2). Approximate park markers cover all four components.", "locations": [{"lat": 18.95, "lng": 104.65, "label": "Pu Mat National Park, Vietnam", "precision": "area"}, {"lat": 11.43, "lng": 107.42, "label": "Cat Tien National Park, Vietnam", "precision": "area"}, {"lat": 9.6, "lng": 105.1, "label": "U Minh Thuong National Park, Vietnam", "precision": "area"}, {"lat": 9.25, "lng": 104.95, "label": "U Minh Ha National Park, Vietnam", "precision": "area"}], "additionalSources": ["https://assets-eu.researchsquare.com/files/rs-1848435/v1/6f7ef6b2-27e9-4604-b002-c5ccd6667483.pdf?c=1658178863"], "title": "Home ranges and activity patterns of Sunda pangolins Manis javanica in Vietnam."}, {"pubNum": 10, "scope": "Endangered Primate Rescue Center, Cuc Phuong, Vietnam", "source": "https://orbi.uliege.be/handle/2268/306324", "evidence": "The pilot surveys were conducted at EPRC, not at the old general point near Hanoi. Marker represents the rescue-centre area.", "locations": [{"lat": 20.25, "lng": 105.715, "label": "Endangered Primate Rescue Center, Cuc Phuong, Vietnam", "precision": "area"}], "title": "Unmanned aerial vehicles (UAVs) with thermal infrared (TIR) sensors are effective for monitoring and counting threatened Vietnamese primates."}, {"pubNum": 11, "scope": "Pu Mat National Park, Nghe An, Vietnam", "source": "https://link.springer.com/article/10.1007/s10344-023-01653-7", "evidence": "The direct camera-trap evidence is from Pu Mat; trade/rescue reports in the same paper are not treated as verified wild-origin sites. Approximate park-area marker.", "locations": [{"lat": 18.95, "lng": 104.65, "label": "Pu Mat National Park, Vietnam", "precision": "area"}], "title": "Southern extension of raccoon dog Nyctereutes procyonoides range in Vietnam with comments on its conservation status."}, {"pubNum": 12, "scope": "Ebo Forest, Littoral Region, Cameroon", "source": "https://link.springer.com/article/10.1007/s10344-023-01660-8", "evidence": "Methods locate the work in north-eastern Ebo Forest. The paper gives the wider forest bounds as 4.086–4.517 N, 10.050–10.642 E. Marker at 4.40 N, 10.40 E is explicitly an approximate forest-area reference, not a nest location.", "locations": [{"lat": 4.4, "lng": 10.4, "label": "North-eastern Ebo Forest, Cameroon", "precision": "area"}], "additionalSources": ["https://www.researchgate.net/publication/363823211_Montane_Grassland_Resources_Drive_Gorilla_Gorilla_Gorilla_Nesting_Behaviours_in_the_Ebo_Forest_Littoral_Region_Cameroon"], "title": "Montane grassland resources drive gorilla (Gorilla gorilla) nesting behaviors in the Ebo forest, Cameroon."}, {"pubNum": 13, "scope": "U Minh Thuong and U Minh Ha buffer zones, Vietnam", "source": "https://doi.org/10.21203/rs.3.rs-2695110/v1", "evidence": "Methods explicitly name community-interview buffer zones around the two parks. Park-area reference markers do not identify respondent households.", "locations": [{"lat": 9.6, "lng": 105.1, "label": "U Minh Thuong National Park, Vietnam", "precision": "area"}, {"lat": 9.25, "lng": 104.95, "label": "U Minh Ha National Park, Vietnam", "precision": "area"}], "title": "Living on the Edge: The Impacts of Buffer Zones on Wetland Carnivores in Vietnam."}, {"pubNum": 14, "scope": "Khe Choang, Pu Mat National Park, Vietnam", "source": "https://smallcarnivoreconservation.com/index.php/sccg/article/view/3686", "evidence": "The paper reports 18°55′28.9″N, 104°35′29.5″E. Converted to decimal degrees; the old Central Highlands point was unrelated.", "locations": [{"lat": 18.924694444444444, "lng": 104.59152777777777, "label": "Khe Choang, Pu Mat — published camera-trap locality", "precision": "published"}], "title": "Evidence of Spotted Linsang Prionodon pardicolor post-weaning parental care."}, {"pubNum": 15, "scope": "Pu Mat National Park, Vietnam", "source": "https://www.researchgate.net/publication/362861292_Confirmed_evidence_of_Marbled_cat_in_Pu_Mat_National_Park_Vietnam", "evidence": "The author-uploaded paper gives three Khe Choang camera-trap record coordinates (pages 25–28). All three are converted from degrees/minutes/seconds; the old point was outside the studied park.", "locations": [{"lat": 18.924222222222223, "lng": 104.61219444444444, "label": "Khe Choang, Pu Mat — published marbled-cat record 1", "precision": "published"}, {"lat": 18.8825, "lng": 104.70400000000001, "label": "Khe Choang, Pu Mat — published marbled-cat record 2", "precision": "published"}, {"lat": 18.92521, "lng": 104.6555, "label": "Khe Choang, Pu Mat — published marbled-cat record 3", "precision": "published"}], "title": "Confirmed evidence of marbled cat in Pu Mat National Park, Vietnam."}, {"pubNum": 16, "scope": "Global · anuran evolution and climate", "source": "https://www.sciencedirect.com/science/article/pii/S2666900522000132", "evidence": "Global comparative and palaeobiological analysis; the old point in the Democratic Republic of the Congo was not a study locality. No single-site marker.", "locations": [], "title": "Extreme-sized anurans are more prone to climate-driven extinctions."}, {"pubNum": 17, "scope": "Donana Natural Area, south-western Spain", "source": "https://www.mdpi.com/2504-446X/6/8/189", "evidence": "Methods provide 36°59′N, 6°26′W for the study area. Converted to decimal degrees. Replaces the old Madrid-area point.", "locations": [{"lat": 36.983333333333334, "lng": -6.433333333333334, "label": "Doñana Natural Area, Spain — published study-area coordinate", "precision": "published"}], "title": "Development of a Fixed-Wing Drone System for Aerial Insect Sampling."}, {"pubNum": 20, "scope": "U Minh Thuong and U Minh Ha, Vietnam", "source": "https://independent.academia.edu/ThongPham100", "evidence": "Author-hosted preprint abstract names the same two southern wetland parks, not the old central coastal marker. Approximate park-area references.", "locations": [{"lat": 9.6, "lng": 105.1, "label": "U Minh Thuong National Park, Vietnam", "precision": "area"}, {"lat": 9.25, "lng": 104.95, "label": "U Minh Ha National Park, Vietnam", "precision": "area"}], "additionalSources": ["https://link.springer.com/article/10.1007/s10344-024-01809-z"], "title": "Status, threats, and overlap of globally important pangolins and threatened small carnivores in a disturbed wetland mosaic of southern Vietnam."}, {"pubNum": 21, "scope": "South and Southeast Asia · species-wide assessment", "source": "https://doi.org/10.2305/IUCN.UK.2022-2.RLTS.T12551A221666136.en", "evidence": "A range-wide Red List assessment, not a Kuala Lumpur study. No single-site marker.", "locations": [], "title": "Macaca fascicularis. IUCN Red List of Threatened Species 2022."}, {"pubNum": 22, "scope": "Global · biofluorescence literature review", "source": "https://ecoevorxiv.org/repository/view/3834/", "evidence": "Review of records across taxa and regions. An arbitrary Brazilian point misrepresented this synthesis. No single-site marker.", "locations": [], "title": "101 years of biofluorescent animal studies: trends in literature, novel hypotheses, and best practices moving forward."}, {"pubNum": 23, "scope": "Carnivore and Pangolin Conservation Program, Cuc Phuong, Vietnam", "source": "https://www.researchgate.net/publication/361496906_Renal_morphophysiology_is_not_a_significant_correlate_of_observable_body_condition_in_Masked_Palm_Civets_Paguma_larvata", "evidence": "Methods explicitly place all rescue facilitation and examinations at the programme in Cuc Phuong National Park. Marker is a facility-area reference, not the seized animals’ unknown wild origins.", "locations": [{"lat": 20.25, "lng": 105.715, "label": "Carnivore and Pangolin Conservation Program, Cuc Phuong, Vietnam", "precision": "area"}], "title": "Renal morphophysiology is not a significant correlate of observable body condition in Masked Palm Civets (Paguma larvata)."}, {"pubNum": 24, "scope": "Vietnam · national policy study", "source": "https://researchnow.flinders.edu.au/en/publications/the-effectiveness-of-policies-for-addressing-covid-19-impacts-on-/", "evidence": "Literature review, case studies and national policy dialogue concern Vietnam. A representative Vietnam marker is explicitly national in scope, not a survey or author-office location.", "locations": [{"lat": 16.4637, "lng": 107.5909, "label": "Vietnam — national policy analysis (representative country marker)", "precision": "country"}], "title": "The effectiveness of policies for addressing Covid-19 impacts on wildlife conservation in Vietnam."}, {"pubNum": 25, "scope": "Global · citizen science and online snake data", "source": "https://archive-ouverte.unige.ch/unige:155143", "evidence": "A review of online data and citizen-science opportunities, not a single Bolivian field study. No single-site marker.", "locations": [], "title": "Citizen science and online data: Opportunities and challenges for snake ecology and action against snakebite."}, {"pubNum": 26, "scope": "Neotropics · comparative snake behaviour", "source": "https://revistas.usp.br/phyllo/en/article/view/187556", "evidence": "Comparative synthesis of behaviour across Neotropical snake lineages, not a single Paraguay locality. No single-site marker.", "locations": [], "title": "Evolutionary dynamics shape two passive defensive mechanisms in Neotropical snake radiations."}, {"pubNum": 27, "scope": "Brazilian Amazon · Almeirim and Vila Tabajara", "source": "https://secemu.org/wp-content/uploads/2022/05/Oliveira_et_al_2021.pdf", "evidence": "The paper reports Almeirim, Para (00°53′S, 52°36′W), and Vila Tabajara, Machadinho D’Oeste, Rondonia (08°56′S, 62°03′W). Both coordinates are converted from the paper.", "locations": [{"lat": -0.8833333333333333, "lng": -52.6, "label": "Almeirim, Para, Brazil — published locality", "precision": "published"}, {"lat": -8.933333333333334, "lng": -62.05, "label": "Vila Tabajara, Rondonia, Brazil — published locality", "precision": "published"}], "title": "First report of intraspecific variation in wing translucency for a Neotropical bat species."}, {"pubNum": 28, "scope": "Sanam Chai Khet District, Chachoengsao, Thailand", "source": "https://www.thebhs.org/publications/the-herpetological-bulletin/issue-number-155-spring-2021/3256-11-male-combat-in-the-striped-kukri-snake-i-oligodon-teniatus-i/file", "evidence": "The observation is in Sanam Chai Khet, not north-eastern Thailand. The printed coordinates have malformed minutes (68 and 67); they are not silently normalised. Use a coarse district-area reference and retain the uncertainty.", "locations": [{"lat": 13.66, "lng": 101.44, "label": "Sanam Chai Khet District, Thailand — approximate district reference", "precision": "area"}], "additionalSources": ["https://www.geonames.org/1606569/sanam-chai-khet.html"], "title": "Male combat in the striped kukri snake Oligodon teniatus."}, {"pubNum": 29, "scope": "Brazil · taxonomic revision and distribution modelling", "source": "https://cris.fau.de/publications/252101444/", "evidence": "The holotype provenance is an unknown locality in Minas Gerais, and the study integrates additional specimens and distribution modelling. The old single southern-Brazil point was unsupported. No single-site marker.", "locations": [], "title": "Taxonomic status of Apostolepis tertulianobeui based on an integrative revision of A. assimilis."}, {"pubNum": 30, "scope": "Northern Aceh, Sumatra, Indonesia · multi-clan study", "source": "https://link.springer.com/article/10.1007/s10531-020-02105-3", "evidence": "Publisher confirms GPS tracking in Aceh; the figure covers three clans in northern Aceh. A coarse northern-Aceh reference is used, explicitly not a collaring coordinate or telemetry fix.", "locations": [{"lat": 4.9, "lng": 96.6, "label": "Northern Aceh, Sumatra — approximate multi-clan study-region reference", "precision": "area"}], "title": "Between a rock and a hard place: rugged terrain features and human disturbance affect behaviour and habitat use of Sumatran elephants in Aceh."}, {"pubNum": 31, "scope": "Murree and Ayubia, northern Pakistan", "source": "https://www.sciencedirect.com/science/article/pii/S0306456520305805", "evidence": "The methods supply Murree 33.9070 N, 73.3943 E and Ayubia National Park 34.0729 N, 73.3812 E. Both replace the old point far to the north.", "locations": [{"lat": 33.907, "lng": 73.3943, "label": "Murree, Pakistan — published study-area coordinate", "precision": "published"}, {"lat": 34.0729, "lng": 73.3812, "label": "Ayubia National Park, Pakistan — published study-area coordinate", "precision": "published"}], "title": "Rise in temperature causes decreased fitness and higher extinction risks in endemic frogs at high altitude forested wetlands in northern Pakistan."}, {"pubNum": 32, "scope": "Aceh, Sumatra, Indonesia · elephant home ranges", "source": "https://link.springer.com/article/10.1007/s10344-020-01426-6", "evidence": "The paper compares GPS-based elephant home ranges in Aceh. Precise telemetry sites were not verified from the accessible publisher text, so only a coarse regional reference is used.", "locations": [{"lat": 4.9, "lng": 96.6, "label": "Aceh, Sumatra — approximate study-region reference", "precision": "area"}], "title": "Identifying the variation in utilization density estimators and home ranges of elephant clans in Aceh, Sumatra, Indonesia."}, {"pubNum": 33, "scope": "International · scholarly publishing analysis", "source": "https://link.springer.com/article/10.1007/s11192-020-03540-3", "evidence": "A journal metadata and publishing-inequality analysis, not a London field site. No single-site marker.", "locations": [], "title": "Sorry, we're open: Golden open-access and inequality in non-human biological sciences."}, {"pubNum": 34, "scope": "Florida, USA · introduced agamas and railways", "source": "https://doi.org/10.1101/2020.05.11.089649", "evidence": "The study concerns observations and potential dispersal throughout Florida. A coarse state reference replaces the old point outside mainland Florida; it is not a claimed introduction or railway observation site.", "locations": [{"lat": 28.1, "lng": -81.6, "label": "Florida, USA — approximate state-wide analysis reference", "precision": "area"}], "title": "Exotic Hobos: Release, escape, and potential secondary dispersal of African red-headed agamas through the Florida railway systems."}, {"pubNum": 35, "scope": "Sakaerat Environmental Research Station, Thailand", "source": "https://www.biotaxa.org/hn/article/download/56878/60008", "evidence": "The observation note explicitly reports 14.5090 N, 101.9537 E at Sakaerat. Replaces the old general point near central Thailand.", "locations": [{"lat": 14.509, "lng": 101.9537, "label": "Sakaerat Environmental Research Station, Thailand — published locality", "precision": "published"}], "title": "First report of reproduction in the wild for Acanthosaura cardamomensis in Thailand."}, {"pubNum": 36, "scope": "Kinabalu Park, Sabah, Malaysia", "source": "https://www.biotaxa.org/hn/article/view/44245/43278", "evidence": "The note explicitly reports 6.0176 N, 116.5373 E, not the old south-western Sabah point.", "locations": [{"lat": 6.0176, "lng": 116.5373, "label": "Kinabalu Park, Sabah, Malaysia — published locality", "precision": "published"}], "title": "Biofluorescent lateral patterning on the Mossy Bushfrog (Philautus macroscelis): the first report of biofluorescence in a rhacophorid frog."}, {"pubNum": 37, "scope": "TREES Field Station, Stann Creek, Belize", "source": "https://www.biotaxa.org/hn/article/download/26321/25916", "evidence": "The paper reports 17.0508 N, 88.5689 W (WGS84) for the new male specimen, rather than the old offshore point.", "locations": [{"lat": 17.0508, "lng": -88.5689, "label": "TREES Field Station, Stann Creek, Belize", "precision": "published"}], "title": "Discovery of the first male specimen of Tantilla hendersoni from a new locality in central Belize."}, {"pubNum": 38, "scope": "TREES Field Station, Stann Creek, Belize", "source": "https://doi.org/10.3897/zookeys.707.14029", "evidence": "The methods give four WGS84 trapping-array coordinates in decimal minutes (pages 135–136). These are converted as degrees + minutes/60, not mistaken for decimal degrees.", "locations": [{"lat": 17.0524, "lng": -88.56913333333334, "label": "TREES, Belize — heavily manicured orchard array", "precision": "published"}, {"lat": 17.0505, "lng": -88.56743333333333, "label": "TREES, Belize — overgrown orchard forest array", "precision": "published"}, {"lat": 17.050833333333333, "lng": -88.56896666666667, "label": "TREES, Belize — overgrown orchard riparian array", "precision": "published"}, {"lat": 17.050466666666665, "lng": -88.5674, "label": "TREES, Belize — lowland broadleaf forest array", "precision": "published"}], "additionalSources": ["https://www.researchgate.net/publication/320334277_Herpetofaunal_assemblages_of_a_lowland_broadleaf_forest_an_overgrown_orchard_forest_and_a_lime_orchard_in_Stann_Creek_Belize"], "title": "Herpetofaunal assemblages of a lowland broadleaf forest, an overgrown orchard forest and a lime orchard in Stann Creek, Belize."}, {"pubNum": 39, "scope": "TREES Field Station, Stann Creek, Belize", "source": "https://mesoamericanherpetology.com/uploads/3/4/7/9/34798824/mh_4-1_other_contributions.pdf", "evidence": "Pages 204–207 give separate WGS84 coordinates for the Bolitoglossa and Ninia records. Both are retained; nearby or shared locality markers are grouped on the map.", "locations": [{"lat": 17.050467, "lng": -88.5674, "label": "TREES, Belize — published Bolitoglossa record", "precision": "published"}, {"lat": 17.0505, "lng": -88.56743, "label": "TREES, Belize — published Ninia record", "precision": "published"}], "title": "Two new herpetofaunal records for Stann Creek District, Belize."}];
+  // ── OpenFreeMap dark map ────────────────────────────────────
+  let publicationMap;
+  let mapLoading;
+  async function initMap() {
+    if (publicationMap) {
+      publicationMap.resize();
+      return;
+    }
+    if (mapLoading) return mapLoading;
+    mapLoading = buildPublicationMap().catch(() => {
+      if (publicationMap) publicationMap.remove();
+      publicationMap = undefined;
+      document.getElementById('map-label').textContent =
+        'The map could not load. All publications remain available below. Reopen this tab to retry.';
+    }).finally(() => { mapLoading = undefined; });
+    return mapLoading;
   }
 
-  // ── Skill bar animation ────────────────────────────
-  function animateSkillBars() {
-    document.querySelectorAll('.skill-bar-fill').forEach(bar => {
-      const w = bar.dataset.width;
-      bar.style.width = w + '%';
+  async function buildPublicationMap() {
+    document.getElementById('map-label').textContent = 'Loading research map…';
+    const maplibregl = await import('https://unpkg.com/maplibre-gl@6.16.0/dist/maplibre-gl.mjs');
+    const map = new maplibregl.Map({
+      container: 'map',
+      style: 'https://tiles.openfreemap.org/styles/dark',
+      center: [105, 10],
+      zoom: 2,
+      maxZoom: 19,
+      attributionControl: { compact: false }
     });
-  }
-  // Animate on load for first page
-  window.addEventListener('load', animateSkillBars);
-
-  // ── Leaflet Map ────────────────────────────────────
-  let mapInitialized = false;
-  function initMap() {
-    if (mapInitialized) return;
-    mapInitialized = true;
-
-    const map = L.map('map', { zoomControl: true }).setView([10, 105], 3);
-
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      attribution: '© OpenStreetMap © CARTO',
-      maxZoom: 19
-    }).addTo(map);
-
-    const goldIcon = L.divIcon({
-      html: '<div style="width:12px;height:12px;border-radius:50%;background:#d4af37;box-shadow:0 0 8px #d4af37;border:2px solid #a67c00"></div>',
-      className: '',
-      iconSize: [12, 12],
-      iconAnchor: [6, 6]
+    publicationMap = map;
+    map.on('styleimagemissing', event => {
+      if (event.id !== 'circle-11' || map.hasImage(event.id)) return;
+      const size = 11, data = new Uint8Array(size * size * 4);
+      for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+        const i = (y * size + x) * 4;
+        data[i] = data[i + 1] = data[i + 2] = 255;
+        data[i + 3] = Math.hypot(x - 5, y - 5) <= 4 ? 255 : 0;
+      }
+      map.addImage(event.id, { width: size, height: size, data });
+    });
+    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
+    map.on('error', () => {
+      document.getElementById('map-label').textContent =
+        'Some map details could not load. All publications remain available below.';
+    });
+    map.on('load', () => {
+      document.getElementById('map-label').textContent = 'Click a marker to jump to a publication.';
     });
 
-    const papers = [
-      { pubNum: 1, lat: 16, lng: 106, title: "Gray et al. 2025 – Prioritising natural heritage in Vietnam (Biodivers Conserv)" },
-      { pubNum: 2, lat: 5,  lng: 115, title: "Lieb, Meijaard, … Gray et al. 2025 – Wild pig population dynamics SE Asia during ASF (Conserv Lett)" },
-      { pubNum: 3, lat: 1,  lng: 103, title: "Gazagne, Gray et al. 2024 – Global thermal detection index for primate research (Sci Rep)" },
-      { pubNum: 4, lat: 10, lng: 106, title: "Gray et al. 2024 – Camera trapping of pangolins and small carnivores in Southern Vietnam (Eur J Wildl Res)" },
-      { pubNum: 5, lat: 15, lng: 108, title: "Trinh, Gray et al. 2024 – Impacts of commercial civet farming in central Vietnam (Small Carnivore Conserv)" },
-      { pubNum: 6, lat: 11.0, lng: 107.2,  title: "Gray & Gazagne 2023 – UAV feasibility for crocodile surveys (Herpetology Notes)" },
-      { pubNum: 7, lat: 22, lng: 104, title: "Cao, Gray et al. 2023 – Greater Hog Badger records from northern Vietnam (Small Carnivore Conserv)" },
-      { pubNum: 8, lat: 35, lng: 73,  title: "Rais, Nawaz, Gray et al. 2023 – Anuran niche suitability in Northern Pakistan (PLoS One)" },
-      { pubNum: 9, lat: 11, lng: 107, title: "Gray et al. 2023 – Home ranges and activity patterns of Sunda pangolins in Vietnam (J Asia-Pacific Biodivers)" },
-      { pubNum: 10, lat: 21, lng: 105, title: "Gazagne, Gray et al. 2023 – UAVs and thermal sensors for Vietnamese primate monitoring (Primates)" },
-      { pubNum: 11, lat: 18, lng: 106, title: "Van Pham, Gray et al. 2023 – Raccoon dog range extension in Vietnam (Eur J Wildl Res)" },
-      { pubNum: 12, lat: 4,  lng: 9,   title: "Mfossa, Gazagne, Gray et al. 2023 – Gorilla nesting in the Ebo Forest, Cameroon (Eur J Wildl Res)" },
-      { pubNum: 13, lat: 12, lng: 107, title: "Nguyen, Willcox, Gray et al. 2023 – Buffer zones and wetland carnivores in Vietnam (preprint)" },
-      { pubNum: 14, lat: 12, lng: 108, title: "Gray et al. 2022 – Spotted Linsang post-weaning parental care (Small Carnivore Conserv)" },
-      { pubNum: 15, lat: 19, lng: 104, title: "Cao, Gray et al. 2022 – Marbled cat confirmed in Pu Mat NP, Vietnam (Cat News)" },
-      { pubNum: 16, lat: -3, lng: 25,  title: "Feijó, Karlsson, Gray et al. 2022 – Extreme-sized anurans and climate-driven extinctions (Climate Change Ecology)" },
-      { pubNum: 17, lat: 40, lng: -3,  title: "Mulero-Pázmány, … Gray et al. 2022 – Fixed-wing drone for aerial insect sampling (Drones)" },
-      { pubNum: 18, lat: 16, lng: 108, title: "Gray et al. 2022 – Status and threats of pangolins and small carnivores in southern Vietnam (preprint)" },
-      { pubNum: 19, lat: 3,  lng: 101, title: "Hansen, Ang, … Gray et al. 2022 – Macaca fascicularis IUCN Red List assessment" },
-      { pubNum: 20, lat: -10,lng: -50, title: "Gray & Karlsson 2022 – 101 years of biofluorescent animal studies" },
-      { pubNum: 21, lat: 12, lng: 109, title: "Lê, Hoang, … Gray 2022 – Renal morphophysiology in Masked Palm Civets (preprint)" },
-      { pubNum: 22, lat: 21, lng: 105, title: "Trịnh … Gray 2021 – Covid-19 impacts on wildlife conservation in Vietnam (CIFOR)" },
-      { pubNum: 23, lat: -15,lng: -65, title: "Durso, … Gray, Bolon 2021 – Citizen science for snake ecology and snakebite (Toxicon: X)" },
-      { pubNum: 24, lat: -25,lng: -55, title: "Tozetti, … Gray et al. 2021 – Defensive mechanisms in Neotropical snakes (Phyllomedusa)" },
-      { pubNum: 25, lat: -10,lng: -40, title: "Oliveira, Peters, Gray et al. 2021 – Wing translucency in a Neotropical bat (J Bat Res Conserv)" },
-      { pubNum: 26, lat: 15, lng: 103, title: "Gray & Dresser 2021 – Male combat in striped kukri snake Oligodon teniatus (Herp Bulletin)" },
-      { pubNum: 27, lat: -20,lng: -50, title: "Entiauspe-Neto, Koch, Gray et al. 2021 – Revision of Apostolepis assimilis (Zoologischer Anzeiger)" },
-      { pubNum: 28, lat: 4.5,lng: 97,  title: "Wilson, Gray et al. 2021 – Rugged terrain and human disturbance affect Sumatran elephants (Biodivers Conserv)" },
-      { pubNum: 29, lat: 36, lng: 74,  title: "Saeed, Rais, Gray et al. 2020 – Temperature rise and frog extinctions in northern Pakistan (J Thermal Biol)" },
-      { pubNum: 30, lat: 4.3,lng: 97.5,title: "Wilson, Gray & Sofyan 2020 – Utilization density of Sumatran elephant clans in Aceh (Eur J Wildl Res)" },
-      { pubNum: 31, lat: 51, lng: 0,   title: "Gray 2020 – Golden open-access and inequality in non-human biological sciences (Scientometrics)" },
-      { pubNum: 34, lat: 25, lng: -81, title: "Gray 2020 – Agama picticauda dispersal through Florida railway systems (BioRxiv)" },
-      { pubNum: 35, lat: 14, lng: 101, title: "Gray 2020 – First reproduction record for Acanthosaura cardamomensis in Thailand (Herpetology Notes)" },
-      { pubNum: 36, lat: 5.5, lng: 116.0, title: "Gray 2019 – Biofluorescence in the Mossy Bushfrog (Herpetology Notes)" },
-      { pubNum: 37, lat: 17, lng: -88, title: "Hofmann, Gray et al. 2017 – First male Tantilla hendersoni specimen from Belize (Herpetology Notes)" },
-      { pubNum: 38, lat: 17, lng: -88.5,title: "Gray & Strine 2017 – Herpetofaunal assemblages in Stann Creek, Belize (ZooKeys)" },
-      { pubNum: 39, lat: 17, lng: -88.2,title: "Gray & Hofmann 2017 – Two new herpetofaunal records for Stann Creek, Belize (Mesoamerican Herpetology)" },
-    ];
 
-    papers.forEach((p, idx) => {
-      const marker = L.marker([p.lat, p.lng], { icon: goldIcon }).addTo(map);
-      marker.on('mouseover', () => {
-        document.getElementById('map-label').innerHTML =
-          '<strong style="color:#d4af37">Gray, R. J.</strong> — ' + p.title;
-      });
-      marker.on('mouseout', () => {
-        document.getElementById('map-label').textContent = 'Click a marker to jump to a publication.';
-      });
-      marker.on('click', () => {
-        const items = Array.from(document.querySelectorAll('#publications .pub-list .pub-item'));
-        const pubEl = items.find(el => {
-          const num = el.querySelector('.pub-num');
-          return num && num.textContent.trim().startsWith('#' + p.pubNum + ' ·');
+    const papers = paperGeography;
+    const points = papers.flatMap(p => p.locations.map(location => ({ ...location, pubNum:p.pubNum, paper:p })));
+    const bounds = new maplibregl.LngLatBounds();
+    points.forEach(p => bounds.extend([p.lng, p.lat]));
+    const resetView = () => {
+      document.getElementById('map-paper-select').value = '';
+      map.fitBounds(bounds, { padding:45, maxZoom:3, duration:0 });
+      document.getElementById('map-label').textContent = 'Select a marker or choose a paper to inspect its study geography.';
+    };
+    document.getElementById('reset-map').onclick = resetView;
+    resetView();
+    document.getElementById('map-paper-select').onchange = event => {
+      const paper = papers.find(p => String(p.pubNum) === event.target.value);
+      if (!paper) { resetView(); return; }
+      document.getElementById('map-label').textContent = paper.scope + ' — ' + paper.evidence;
+      if (!paper.locations.length) {
+        map.fitBounds(bounds,{padding:45,maxZoom:3,duration:0});
+        return;
+      }
+      const paperBounds = new maplibregl.LngLatBounds();
+      paper.locations.forEach(p => paperBounds.extend([p.lng,p.lat]));
+      if (paper.locations.some(p=>p.precision==='country')) {
+        paperBounds.extend([102.1,8.2]);
+        paperBounds.extend([109.5,23.4]);
+      }
+      map.fitBounds(paperBounds,{padding:65,maxZoom:8,duration:0});
+    };
+    const groups = new Map();
+    points.forEach(point => {
+      const key = point.lat.toFixed(2) + ',' + point.lng.toFixed(2);
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(point);
+    });
+    groups.forEach(group => {
+      const entries = [...new Map(group.map(p => [p.pubNum,p.paper])).values()];
+      const isPublished = group.length === 1 && group[0].precision === 'published';
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'publication-marker' + (isPublished ? '' : ' area') + (entries.length > 1 ? ' group' : '');
+      if (entries.length > 1) button.textContent = String(entries.length);
+      const locationText = [...new Set(group.map(p => p.label))].join('; ');
+      const label = entries.length > 1 ? entries.length + ' papers at nearby study locations: ' + locationText : 'View publication: ' + entries[0].title + ' — ' + locationText;
+      button.title = label;
+      button.setAttribute('aria-label',label);
+      button.dataset.publications = entries.map(p => p.pubNum).join(',');
+      const showLocation = () => { document.getElementById('map-label').textContent = locationText + ' — ' + entries.map(e => e.title).join(' / '); };
+      button.addEventListener('mouseenter',showLocation);
+      button.addEventListener('focus',showLocation);
+      const lat = group.reduce((s,p)=>s+p.lat,0)/group.length;
+      const lng = group.reduce((s,p)=>s+p.lng,0)/group.length;
+      if (entries.length === 1) {
+        button.addEventListener('click',()=>jumpToPublication(entries[0].pubNum));
+      } else {
+        button.addEventListener('click',event=>{
+          event.stopPropagation();
+          const content = document.createElement('div');
+          const heading = document.createElement('strong');
+          heading.textContent = 'Papers at nearby locations';
+          content.appendChild(heading);
+          const popup = new maplibregl.Popup({maxWidth:'320px'}).setLngLat([lng,lat]);
+          entries.forEach(p=>{
+            const choice=document.createElement('button');
+            choice.type='button';choice.className='map-paper-choice';
+            choice.textContent='#'+p.pubNum+' · '+p.title;
+            choice.addEventListener('click',()=>{popup.remove();jumpToPublication(p.pubNum);});
+            content.appendChild(choice);
+          });
+          popup.setDOMContent(content).addTo(map);
         });
-        if (pubEl) {
-          pubEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          document.querySelectorAll('.pub-item.highlight').forEach(el => el.classList.remove('highlight'));
-          pubEl.classList.add('highlight');
-          setTimeout(() => pubEl.classList.remove('highlight'), 2500);
-        }
-      });
-      marker.bindPopup('<div style="color:#1e2029;font-size:0.8rem;max-width:260px">' + p.title + '</div>');
+      }
+      new maplibregl.Marker({element:button}).setLngLat([lng,lat]).addTo(map);
     });
   }
+
+  showPage(location.hash.slice(1));
 </script>
 </body>
 </html>
+
